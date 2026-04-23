@@ -1,0 +1,47 @@
+<!--
+-------------------------------------------------------------------------------
+ 5W + H SYSTEM MANIFEST (LEEWAY STANDARDS)
+-------------------------------------------------------------------------------
+ WHAT: Popup UI for the LeeWay Unified Edge extension
+ WHY: Provides a single action to launch the unified PWA from the browser toolbar
+ WHO: Creator: Leonard Lee | Leeway Innovations | A Leeway Industries Creation
+ WHERE: Browser extension popup
+ WHEN: When the user clicks the extension icon
+ HOW: Contains a button that opens the PWA page in a new tab using the
+      Chrome extension API.
+ TAG: UI.PUBLIC.PAGE.EXTENSION.POPUP
+ REGION: 🔵 UI
+ DISCOVERY_PIPELINE:
+   Voice → Intent → Location → Vertical → Ranking → Render
+-------------------------------------------------------------------------------
+-->
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Launch LeeWay Edge</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        background: #161b22;
+        color: #c9d1d9;
+        margin: 0;
+        padding: 1rem;
+      }
+      button {
+        width: 100%;
+        padding: 0.75rem;
+        font-size: 1rem;
+        background: #238636;
+        border: none;
+        color: #fff;
+        border-radius: 0.25rem;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <button id="launchBtn">Open LeeWay Edge</button>
+    <script src="popup.js"></script>
+  </body>
+</html>

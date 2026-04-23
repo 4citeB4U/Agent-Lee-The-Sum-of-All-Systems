@@ -1,0 +1,14 @@
+path,echo_target,adapter_type,reason
+leeway-construct/room-on-the-edge/.env.example,../../LeeWay-Standards/env-adapters/.env.construct.example,standards-env-adapter,Remove GEMINI_API_KEY; use Standards service URLs only
+leeway-construct/room-on-the-edge/vite.config.ts,../../LeeWay-Standards/build/vite.config.standards.ts,standards-build-adapter,Remove GEMINI_API_KEY injection; add Standards adapter service URLs
+leeway-construct/room-on-the-edge/index.html,../../LeeWay-Standards/resources/construct.html.echo,standards-echo,Remove Google AI Studio title; update to LeeWay branding and Standards links
+leeway-construct/room-on-the-edge/package.json,../../LeeWay-Standards/build/package.construct.json,standards-package-adapter,Remove @google/genai dependency; add Standards adapter dependencies
+leeway-construct/room-on-the-edge/README.md,../../LeeWay-Standards/docs/construct-integration.md,standards-doc-echo,Replace AI Studio deployment guide with LeeWay Standards integration guide
+leeway-construct/room-on-the-edge/src/firebase.ts,../../LeeWay-Standards/adapters/firebase-auth-adapter.ts,standards-auth-adapter,Wrap Firebase with Standards auth contract; remove GoogleAuthProvider direct usage
+leeway-employment-center/.env.example,../../LeeWay-Standards/env-adapters/.env.employment.example,standards-env-adapter,Remove GEMINI_API_KEY; use Standards service URLs only
+leeway-employment-center/vite.config.ts,../../LeeWay-Standards/build/vite.config.standards.ts,standards-build-adapter,Remove GEMINI_API_KEY injection; add Standards adapter service URLs
+leeway-employment-center/index.html,../../LeeWay-Standards/resources/employment.html.echo,standards-echo,Remove Google AI Studio title; update to LeeWay branding and Standards links
+leeway-employment-center/package.json,../../LeeWay-Standards/build/package.employment.json,standards-package-adapter,Remove @google/genai dependency; add Standards agent-generation-service adapter
+leeway-employment-center/README.md,../../LeeWay-Standards/docs/employment-integration.md,standards-doc-echo,Replace AI Studio deployment guide with LeeWay Standards integration guide
+leeway-employment-center/src/firebase.ts,../../LeeWay-Standards/adapters/firebase-auth-adapter.ts,standards-auth-adapter,Wrap Firebase with Standards auth contract; remove GoogleAuthProvider direct usage
+leeway-employment-center/src/components/Onboarding.tsx,../../LeeWay-Standards/components/onboarding-adapter.tsx,standards-component-adapter,Replace geminiService calls with Standards agent-generation-service adapter calls

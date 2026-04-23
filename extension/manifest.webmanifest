@@ -1,0 +1,33 @@
+/*
+-------------------------------------------------------------------------------
+ 5W + H SYSTEM MANIFEST (LEEWAY STANDARDS)
+-------------------------------------------------------------------------------
+ WHAT: Web App Manifest for the unified LeeWay Edge PWA
+ WHY: Defines how the PWA appears on user devices and controls launch behaviour.
+ WHO: Creator: Leonard Lee | Leeway Innovations | A Leeway Industries Creation
+ WHERE: Browser install prompt / homescreen on supported devices
+ WHEN: Served at PWA install time and read by the browser
+ HOW: Provides metadata (name, icons, colours, start_url) for the PWA shell.
+ TAG: UI.PUBLIC.MANIFEST.PWA
+ REGION: 🔵 UI
+ DISCOVERY_PIPELINE:
+   Voice → Intent → Location → Vertical → Ranking → Render
+-------------------------------------------------------------------------------
+*/
+{
+  "name": "LeeWay Unified Edge",
+  "short_name": "LeeWayEdge",
+  "description": "Unified LeeWay Edge GPU & RTC interface",
+  "icons": [
+    {
+      "src": "/icons/icon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#0d1117",
+  "theme_color": "#161b22",
+  "scope": "/"
+}

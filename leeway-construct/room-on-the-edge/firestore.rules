@@ -1,0 +1,64 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper to check authentication
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Helper for owner check
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // Default admin - bootstrapped to agentlee2912@gmail.com
+    function isAdmin() {
+      return isAuthenticated() &&
+        (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' ||
+          (request.auth.token.email == "agentlee2912@gmail.com" && request.auth.token.email_verified == true));
+    }
+
+    // Validation for ConstructTemplate
+    function isValidConstruct(data) {
+      return data.id is string &&
+             data.skyboxColor is string &&
+             data.gridColor is string &&
+             data.nebulaIntensity is number;
+    }
+
+    // Validation for ActiveProjection
+    function isValidProjection(data) {
+      return data.id is string &&
+             data.title is string &&
+             data.status in ['open', 'closed'] &&
+             data.owner is string;
+    }
+
+    // Helper to check for required fields existence
+    function hasRequiredFields(fields) {
+      return request.resource.data.keys().hasAll(fields);
+    }
+
+    // Construct Templates: Anyone authenticated can read/write their own
+    match /constructs/{constructId} {
+      allow read: if isAuthenticated();
+      allow create, update: if isAuthenticated() && isValidConstruct(request.resource.data);
+      allow delete: if isAdmin();
+    }
+
+    // Live Projections: Anyone authenticated can read/write their own
+    match /projections/{projectionId} {
+      allow read: if isOwner(resource.data.owner);
+      allow create: if isAuthenticated() && isValidProjection(request.resource.data) && isOwner(request.resource.data.owner);
+      allow update: if isAuthenticated() && isValidProjection(request.resource.data) && isOwner(resource.data.owner);
+      allow delete: if isAuthenticated() && (isOwner(resource.data.owner) || isAdmin());
+    }
+    
+    // User roles
+    match /users/{userId} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
+    }
+  }
+}

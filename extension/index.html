@@ -1,0 +1,87 @@
+<!--
+-------------------------------------------------------------------------------
+ 5W + H SYSTEM MANIFEST (LEEWAY STANDARDS)
+-------------------------------------------------------------------------------
+ WHAT: Unified LeeWay GPU/RTC interface for room creation and QR code join
+ WHY: To demonstrate how the WebGPU fabric and WebRTC hive can be combined
+      into a single, installable PWA and extension with minimal UI. Users can
+      create a unique room for gaming or collaboration, share a QR code to join
+      that room and trigger GPU computations from the same page.
+ WHO: Creator: Leonard Lee | Leeway Innovations | A Leeway Industries Creation
+ WHERE: Browser (local-first) via PWA/extension, accessible on desktop and mobile
+ WHEN: Runtime when user interacts (Create/Join room; start GPU task)
+ HOW: Uses WebGPU for compute (GPU matmul example) and WebRTC signalling via
+      LeewayRTCBridge; generates QR codes using an embedded library.
+ TAG: UI.PUBLIC.PAGE.UNIFIED.MAIN
+ REGION: 🔵 UI
+ DISCOVERY_PIPELINE:
+   Voice → Intent → Location → Vertical → Ranking → Render
+-------------------------------------------------------------------------------
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LeeWay Unified Edge</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #0d1117;
+      color: #c9d1d9;
+      margin: 0;
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+    h1 { margin: 0; font-size: 1.5rem; color: #58a6ff; }
+    .section { background: #161b22; padding: 1rem; border-radius: 0.5rem; }
+    label { display: block; margin-top: 0.5rem; }
+    input[type="text"] { width: 100%; padding: 0.5rem; border: 1px solid #30363d; border-radius: 0.25rem; background: #0d1117; color: #c9d1d9; }
+    button { margin-top: 0.5rem; padding: 0.5rem 1rem; background: #238636; border: none; border-radius: 0.25rem; color: #fff; cursor: pointer; }
+    button.secondary { background: #0969da; }
+    #qr { margin-top: 0.5rem; }
+    #status { font-size: 0.9rem; color: #8b949e; margin-top: 0.5rem; }
+    #gpuResult { white-space: pre-wrap; background: #0d1117; border: 1px solid #30363d; padding: 0.5rem; margin-top: 0.5rem; border-radius: 0.25rem; max-height: 200px; overflow-y: auto; }
+  </style>
+  <!-- Link to the PWA manifest -->
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <!-- Include a lightweight QR code generator. If loading from the web is
+       undesired, copy the contents of the script into a local file and
+       reference it instead. -->
+  <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@2.0.4/dist/qrcode.min.js"></script>
+</head>
+<body>
+  <h1>LeeWay Unified Edge</h1>
+  <div class="section">
+    <h2>Create Room</h2>
+    <button id="createRoomBtn">Create New Room</button>
+    <div id="roomDisplay"></div>
+    <div id="qr"></div>
+  </div>
+  <div class="section">
+    <h2>Join Room</h2>
+    <label for="joinId">Enter Room ID</label>
+    <input id="joinId" type="text" placeholder="Room ID" />
+    <button id="joinRoomBtn" class="secondary">Join</button>
+  </div>
+  <div class="section">
+    <h2>GPU Task</h2>
+    <button id="startGpuBtn">Run GPU Demo</button>
+    <div id="gpuResult"></div>
+  </div>
+  <div id="status"></div>
+  <script type="module" src="./integrated.js"></script>
+  <script>
+    // Register the unified service worker to enable offline support and caching
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./service-worker.js')
+          .then(() => console.log('LeeWay unified service worker registered.'))
+          .catch((err) => console.error('Service worker registration failed:', err));
+      });
+    }
+  </script>
+</body>
+</html>

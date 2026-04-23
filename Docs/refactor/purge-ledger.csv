@@ -1,0 +1,560 @@
+repo,source_path,current_role,correct_owner,action,target_path,risk,reason,import_rewrite,approved
+*,**/node_modules/**,env,External,EXTERNALIZE,,low,dependency cache,false,false
+*,**/.venv/**,env,External,EXTERNALIZE,,low,virtual environment,false,false
+*,**/dist/**,build,External,EXTERNALIZE,,low,build output,false,false
+*,**/*.gguf,binary,External,EXTERNALIZE,,high,model artifact,false,false
+*,**/*.safetensors,binary,External,EXTERNALIZE,,high,model artifact,false,false
+agent-lee-agentic-os,**/runtime/**,runtime,Integrated,MOVE,LeeWay-Edge-Integrated/runtime,high,projection owning runtime,true,false
+LeeWay-Agents-the-World-Within,**/runtime/**,runtime,Integrated,MOVE,LeeWay-Edge-Integrated/runtime,high,projection owning runtime,true,false
+LeeWay-Edge-Integrated,**/transport/**,rtc,RTC,MOVE,LeeWay-Edge-RTC-main/src/transport,high,transport misplaced,true,false
+*,**/GovernanceContract.*,governance,Standards,MOVE,LeeWay-Standards/packages/standards/policy,high,law duplication,true,false
+*,**/IntentSanitizer.*,governance,Standards,MOVE,LeeWay-Standards/packages/standards/validators,high,law duplication,true,false
+LeeWay-Standards,LeeWay-Standards/Docs/refactor/cycle-runner.err.log,placeholder,External,QUARANTINE,,low,dead placeholder file,false,false
+LeeWay-Standards,LeeWay-Standards/Docs/refactor/cycle-runner.err.log,unknown,External,QUARANTINE,,medium,unknown ownership fallback,false,false
+LeeWay-Standards,LeeWay-Standards/Docs/refactor/cycle-runner.out.log,placeholder,External,QUARANTINE,,low,dead placeholder file,false,false
+LeeWay-Standards,LeeWay-Standards/Docs/refactor/cycle-runner.out.log,unknown,External,QUARANTINE,,medium,unknown ownership fallback,false,false
+LeeWay-Standards,LeeWay-Standards/Docs/refactor/group-resolution/G001-A.csv,unknown,External,QUARANTINE,,medium,unknown ownership fallback,false,false
+LeeWay-Standards,LeeWay-Standards/Docs/refactor/group-resolution/G001-A2.csv,unknown,External,QUARANTINE,,medium,unknown ownership fallback,false,false
+LeeWay-Standards,LeeWay-Standards/Docs/refactor/group-resolution/G001-A3.csv,unknown,External,QUARANTINE,,medium,unknown ownership fallback,false,false
+LeeWay-Standards,LeeWay-Standards/Docs/refactor/group-resolution/G001-A4.csv,unknown,External,QUARANTINE,,medium,unknown ownership fallback,false,false
+LeeWay-Standards,LeeWay-Standards/Docs/refactor/group-resolution/G001-B.csv,unknown,External,QUARANTINE,,medium,unknown ownership fallback,false,false
+LeeWay-Standards,LeeWay-Standards/Docs/refactor/group-resolution/G001-C.csv,unknown,External,QUARANTINE,,medium,unknown ownership fallback,false,false
+LeeWay-Standards,LeeWay-Standards/Docs/refactor/group-resolution/G001-C1.csv,unknown,External,QUARANTINE,,medium,unknown ownership fallback,false,false
+LeeWay-Standards,LeeWay-Standards/Docs/refactor/group-resolution/G001-C2-seed.csv,unknown,External,QUARANTINE,,medium,unknown ownership fallback,false,false
+LeeWay-Standards,LeeWay-Standards/Docs/refactor/group-resolution/G001-D.csv,unknown,External,QUARANTINE,,medium,unknown ownership fallback,false,false
+LeeWay-Standards,LeeWay-Standards/Docs/refactor/group-resolution/G001-wildcard-expansion.csv,unknown,External,QUARANTINE,,medium,unknown ownership fallback,false,false
+LeeWay-Standards,LeeWay-Standards/Docs/refactor/group-resolution/G002-wildcard-expansion.csv,unknown,External,QUARANTINE,,medium,unknown ownership fallback,false,false
+LeeWay-Standards,LeeWay-Standards/Docs/refactor/move-batch-001.csv,unknown,External,QUARANTINE,,medium,unknown ownership fallback,false,false
+LeeWay-Standards,LeeWay-Standards/Docs/refactor/move-batch-002.csv,unknown,External,QUARANTINE,,medium,unknown ownership fallback,false,false
+LeeWay-Standards,LeeWay-Standards/Docs/refactor/move-candidates-by-category.csv,unknown,External,QUARANTINE,,medium,unknown ownership fallback,false,false
+LeeWay-Standards,LeeWay-Standards/Docs/refactor/move-candidates-by-dependency-depth.csv,unknown,External,QUARANTINE,,medium,unknown ownership fallback,false,false
+LeeWay-Standards,LeeWay-Standards/Docs/refactor/move-candidates-by-filetype.csv,unknown,External,QUARANTINE,,medium,unknown ownership fallback,false,false
+LeeWay-Standards,LeeWay-Standards/Docs/refactor/move-candidates-by-repo.csv,unknown,External,QUARANTINE,,medium,unknown ownership fallback,false,false
+LeeWay-Standards,LeeWay-Standards/Docs/refactor/move-group-breakdown.csv,unknown,External,QUARANTINE,,medium,unknown ownership fallback,false,false
+LeeWay-Standards,LeeWay-Standards/Docs/refactor/move-map-annotated.csv,unknown,External,QUARANTINE,,medium,unknown ownership fallback,false,false
+LeeWay-Standards,LeeWay-Standards/Docs/refactor/move-map-starter-draft.csv,unknown,External,QUARANTINE,,medium,unknown ownership fallback,false,false
+LeeWay-Standards,LeeWay-Standards/Docs/refactor/move-map-tiered.csv,unknown,External,QUARANTINE,,medium,unknown ownership fallback,false,false
+LeeWay-Standards,LeeWay-Standards/Docs/refactor/move-map.csv,unknown,External,QUARANTINE,,medium,unknown ownership fallback,false,false
+LeeWay-Standards,LeeWay-Standards/Docs/refactor/move-tier-breakdown.csv,unknown,External,QUARANTINE,,medium,unknown ownership fallback,false,false
+LeeWay-Standards,LeeWay-Standards/Docs/refactor/ownership-matrix.csv,unknown,External,QUARANTINE,,medium,unknown ownership fallback,false,false
+LeeWay-Standards,LeeWay-Standards/Docs/refactor/purge-ledger.csv,unknown,External,QUARANTINE,,medium,unknown ownership fallback,false,false
+LeeWay-Standards,LeeWay-Standards/Docs/refactor/quarantine-batch-001.csv,unknown,External,QUARANTINE,,medium,unknown ownership fallback,false,false
+LeeWay-Standards,LeeWay-Standards/Docs/refactor/quarantine-batch-002.csv,unknown,External,QUARANTINE,,medium,unknown ownership fallback,false,false
+LeeWay-Standards,LeeWay-Standards/Docs/refactor/quarantine-batch-003.csv,unknown,External,QUARANTINE,,medium,unknown ownership fallback,false,false
+LeeWay-Standards,LeeWay-Standards/Docs/refactor/quarantine-batch-004.csv,unknown,External,QUARANTINE,,medium,unknown ownership fallback,false,false
+LeeWay-Standards,LeeWay-Standards/Docs/refactor/quarantine-batch-005.csv,unknown,External,QUARANTINE,,medium,unknown ownership fallback,false,false
+LeeWay-Standards,LeeWay-Standards/Docs/refactor/quarantine-batch-006.csv,unknown,External,QUARANTINE,,medium,unknown ownership fallback,false,false
+LeeWay-Standards,LeeWay-Standards/Docs/refactor/quarantine-batch-007.csv,unknown,External,QUARANTINE,,medium,unknown ownership fallback,false,false
+LeeWay-Standards,LeeWay-Standards/Docs/refactor/quarantine-remainder-by-reason-batch-005.csv,unknown,External,QUARANTINE,,medium,unknown ownership fallback,false,false
+LeeWay-Standards,LeeWay-Standards/Docs/refactor/quarantine-remainder-by-reason-batch-006.csv,unknown,External,QUARANTINE,,medium,unknown ownership fallback,false,false
+LeeWay-Standards,LeeWay-Standards/Docs/refactor/quarantine-remainder-by-reason-batch-007.csv,unknown,External,QUARANTINE,,medium,unknown ownership fallback,false,false
+LeeWay-Standards,LeeWay-Standards/Docs/refactor/quarantine-remainder-by-repo-batch-005.csv,unknown,External,QUARANTINE,,medium,unknown ownership fallback,false,false
+LeeWay-Standards,LeeWay-Standards/Docs/refactor/quarantine-remainder-by-repo-batch-006.csv,unknown,External,QUARANTINE,,medium,unknown ownership fallback,false,false
+LeeWay-Standards,LeeWay-Standards/Docs/refactor/quarantine-remainder-by-repo-batch-007.csv,unknown,External,QUARANTINE,,medium,unknown ownership fallback,false,false
+LeeWay-Standards,LeeWay-Standards/Docs/refactor/quarantine-remainder-by-risk-batch-005.csv,unknown,External,QUARANTINE,,medium,unknown ownership fallback,false,false
+LeeWay-Standards,LeeWay-Standards/Docs/refactor/quarantine-remainder-by-risk-batch-006.csv,unknown,External,QUARANTINE,,medium,unknown ownership fallback,false,false
+LeeWay-Standards,LeeWay-Standards/Docs/refactor/quarantine-remainder-by-risk-batch-007.csv,unknown,External,QUARANTINE,,medium,unknown ownership fallback,false,false
+LeeWay-Standards,LeeWay-Standards/Docs/refactor/quarantine-remainder-by-role-batch-005.csv,unknown,External,QUARANTINE,,medium,unknown ownership fallback,false,false
+LeeWay-Standards,LeeWay-Standards/Docs/refactor/quarantine-remainder-by-role-batch-006.csv,unknown,External,QUARANTINE,,medium,unknown ownership fallback,false,false
+LeeWay-Standards,LeeWay-Standards/Docs/refactor/quarantine-remainder-by-role-batch-007.csv,unknown,External,QUARANTINE,,medium,unknown ownership fallback,false,false
+LeeWay-Standards,LeeWay-Standards/governance/layers/L7_Execution_Die/shaders/bitwise_integrity.wgsl,compute,GPU,MOVE,LeewayEdgeWebGPU/gpu,high,gpu logic outside webgpu repo,true,false
+LeeWay-Standards,LeeWay-Standards/governance/layers/L7_Execution_Die/shaders/bitwise_integrity.wgsl,unknown,External,QUARANTINE,,medium,unknown ownership fallback,false,false
+LeeWay-Standards,LeeWay-Standards/governance/layers/L7_Execution_Die/shaders/context_compressor.wgsl,compute,GPU,MOVE,LeewayEdgeWebGPU/gpu,high,gpu logic outside webgpu repo,true,false
+LeeWay-Standards,LeeWay-Standards/governance/layers/L7_Execution_Die/shaders/context_compressor.wgsl,unknown,External,QUARANTINE,,medium,unknown ownership fallback,false,false
+LeeWay-Standards,LeeWay-Standards/governance/layers/L7_Execution_Die/shaders/data_normalizer.wgsl,compute,GPU,MOVE,LeewayEdgeWebGPU/gpu,high,gpu logic outside webgpu repo,true,false
+LeeWay-Standards,LeeWay-Standards/governance/layers/L7_Execution_Die/shaders/data_normalizer.wgsl,unknown,External,QUARANTINE,,medium,unknown ownership fallback,false,false
+LeeWay-Standards,LeeWay-Standards/governance/layers/L7_Execution_Die/shaders/tensor_matmul.wgsl,compute,GPU,MOVE,LeewayEdgeWebGPU/gpu,high,gpu logic outside webgpu repo,true,false
+LeeWay-Standards,LeeWay-Standards/governance/layers/L7_Execution_Die/shaders/tensor_matmul.wgsl,unknown,External,QUARANTINE,,medium,unknown ownership fallback,false,false
+LeeWay-Standards,LeeWay-Standards/services/sfu/src/signaling/handler.ts,rtc,RTC,MOVE,LeeWay-Edge-RTC-main/src/transport,high,rtc logic outside rtc repo,true,false
+LeeWay-Standards,LeeWay-Standards/src/agents/rtc/aria.ts,rtc,RTC,MOVE,LeeWay-Edge-RTC-main/src/transport,high,rtc logic outside rtc repo,true,false
+LeeWay-Standards,LeeWay-Standards/src/agents/rtc/bus.ts,rtc,RTC,MOVE,LeeWay-Edge-RTC-main/src/transport,high,rtc logic outside rtc repo,true,false
+LeeWay-Standards,LeeWay-Standards/src/agents/rtc/governance.ts,rtc,RTC,MOVE,LeeWay-Edge-RTC-main/src/transport,high,rtc logic outside rtc repo,true,false
+LeeWay-Standards,LeeWay-Standards/src/agents/rtc/governor.ts,rtc,RTC,MOVE,LeeWay-Edge-RTC-main/src/transport,high,rtc logic outside rtc repo,true,false
+LeeWay-Standards,LeeWay-Standards/src/agents/rtc/nexus.ts,rtc,RTC,MOVE,LeeWay-Edge-RTC-main/src/transport,high,rtc logic outside rtc repo,true,false
+LeeWay-Standards,LeeWay-Standards/src/agents/rtc/observer.ts,rtc,RTC,MOVE,LeeWay-Edge-RTC-main/src/transport,high,rtc logic outside rtc repo,true,false
+LeeWay-Standards,LeeWay-Standards/src/agents/rtc/registry.ts,rtc,RTC,MOVE,LeeWay-Edge-RTC-main/src/transport,high,rtc logic outside rtc repo,true,false
+LeeWay-Standards,LeeWay-Standards/src/agents/rtc/repair.ts,rtc,RTC,MOVE,LeeWay-Edge-RTC-main/src/transport,high,rtc logic outside rtc repo,true,false
+LeeWay-Standards,LeeWay-Standards/src/agents/rtc/runtime.ts,rtc,RTC,MOVE,LeeWay-Edge-RTC-main/src/transport,high,rtc logic outside rtc repo,true,false
+LeeWay-Standards,LeeWay-Standards/src/agents/rtc/scaler.ts,rtc,RTC,MOVE,LeeWay-Edge-RTC-main/src/transport,high,rtc logic outside rtc repo,true,false
+LeeWay-Standards,LeeWay-Standards/src/agents/rtc/sentinel.ts,rtc,RTC,MOVE,LeeWay-Edge-RTC-main/src/transport,high,rtc logic outside rtc repo,true,false
+LeeWay-Standards,LeeWay-Standards/src/agents/rtc/vector.ts,rtc,RTC,MOVE,LeeWay-Edge-RTC-main/src/transport,high,rtc logic outside rtc repo,true,false
+LeeWay-Standards,LeeWay-Standards/src/agents/rtc/ward.ts,rtc,RTC,MOVE,LeeWay-Edge-RTC-main/src/transport,high,rtc logic outside rtc repo,true,false
+LeeWay-Standards,LeeWay-Standards/src/core/brain/slang.db,unknown,External,QUARANTINE,,medium,unknown ownership fallback,false,false
+LeeWay-Standards,LeeWay-Standards/src/runtime/engines/room-system.adapter.js,rtc,RTC,MOVE,LeeWay-Edge-RTC-main/src/transport,high,rtc logic outside rtc repo,true,false
+LeeWay-Standards,LeeWay-Standards/src/runtime/rtc/federation-router.ts,rtc,RTC,MOVE,LeeWay-Edge-RTC-main/src/transport,high,rtc logic outside rtc repo,true,false
+LeeWay-Standards,LeeWay-Standards/src/runtime/rtc/leeway-rtc-native.ts,rtc,RTC,MOVE,LeeWay-Edge-RTC-main/src/transport,high,rtc logic outside rtc repo,true,false
+LeeWay-Standards,LeeWay-Standards/src/runtime/rtc/mesh-fallback.ts,rtc,RTC,MOVE,LeeWay-Edge-RTC-main/src/transport,high,rtc logic outside rtc repo,true,false
+LeeWay-Standards,LeeWay-Standards/src/runtime/rtc/store.ts,rtc,RTC,MOVE,LeeWay-Edge-RTC-main/src/transport,high,rtc logic outside rtc repo,true,false
+LeeWay-Standards,LeeWay-Standards/src/runtime/rtc/vector-agent.ts,rtc,RTC,MOVE,LeeWay-Edge-RTC-main/src/transport,high,rtc logic outside rtc repo,true,false
+LeeWay-Standards,LeeWay-Standards/src/voice/server/.env.example,unknown,External,QUARANTINE,,medium,unknown ownership fallback,false,false
+LeeWay-Standards,LeeWay-Standards/adapters/mcp/contracts/agent-contracts.ts,import,External,QUARANTINE,,medium,broken import path ./capability-vocab.js,false,false
+LeeWay-Standards,LeeWay-Standards/adapters/mcp/contracts/job-contract.ts,import,External,QUARANTINE,,medium,broken import path ./capability-vocab.js,false,false
+LeeWay-Standards,LeeWay-Standards/adapters/mcp/desktop-commander-agent-mcp/index.ts,import,External,QUARANTINE,,medium,broken import path ./tools/capture-state.js,false,false
+LeeWay-Standards,LeeWay-Standards/adapters/mcp/desktop-commander-agent-mcp/index.ts,import,External,QUARANTINE,,medium,broken import path ./tools/kill-process.js,false,false
+LeeWay-Standards,LeeWay-Standards/adapters/mcp/desktop-commander-agent-mcp/index.ts,import,External,QUARANTINE,,medium,broken import path ./tools/open-app.js,false,false
+LeeWay-Standards,LeeWay-Standards/adapters/mcp/desktop-commander-agent-mcp/index.ts,import,External,QUARANTINE,,medium,broken import path ./tools/read-file.js,false,false
+LeeWay-Standards,LeeWay-Standards/adapters/mcp/desktop-commander-agent-mcp/index.ts,import,External,QUARANTINE,,medium,broken import path ./tools/run-terminal.js,false,false
+LeeWay-Standards,LeeWay-Standards/adapters/mcp/desktop-commander-agent-mcp/index.ts,import,External,QUARANTINE,,medium,broken import path ./tools/write-file.js,false,false
+LeeWay-Standards,LeeWay-Standards/adapters/mcp/desktop-commander-agent-mcp/tools/read-file.ts,import,External,QUARANTINE,,medium,broken import path ../lib/path-guard.js,false,false
+LeeWay-Standards,LeeWay-Standards/adapters/mcp/desktop-commander-agent-mcp/tools/run-terminal.ts,import,External,QUARANTINE,,medium,broken import path ../lib/path-guard.js,false,false
+LeeWay-Standards,LeeWay-Standards/adapters/mcp/desktop-commander-agent-mcp/tools/write-file.ts,import,External,QUARANTINE,,medium,broken import path ../lib/path-guard.js,false,false
+LeeWay-Standards,LeeWay-Standards/adapters/mcp/health-sweep.ts,import,External,QUARANTINE,,medium,broken import path ./index.ts,false,false
+LeeWay-Standards,LeeWay-Standards/adapters/mcp/memory-agent-mcp/index.ts,import,External,QUARANTINE,,medium,broken import path ./lib/session-store.js,false,false
+LeeWay-Standards,LeeWay-Standards/adapters/mcp/memory-agent-mcp/index.ts,import,External,QUARANTINE,,medium,broken import path ./tools/build-context-packet.js,false,false
+LeeWay-Standards,LeeWay-Standards/adapters/mcp/memory-agent-mcp/index.ts,import,External,QUARANTINE,,medium,broken import path ./tools/compress-session.js,false,false
+LeeWay-Standards,LeeWay-Standards/adapters/mcp/memory-agent-mcp/index.ts,import,External,QUARANTINE,,medium,broken import path ./tools/fetch-related-episodes.js,false,false
+LeeWay-Standards,LeeWay-Standards/adapters/mcp/memory-agent-mcp/index.ts,import,External,QUARANTINE,,medium,broken import path ./tools/recall-context.js,false,false
+LeeWay-Standards,LeeWay-Standards/adapters/mcp/memory-agent-mcp/index.ts,import,External,QUARANTINE,,medium,broken import path ./tools/write-summary.js,false,false
+LeeWay-Standards,LeeWay-Standards/adapters/mcp/memory-agent-mcp/tools/build-context-packet.ts,import,External,QUARANTINE,,medium,broken import path ./recall-context.js,false,false
+LeeWay-Standards,LeeWay-Standards/adapters/mcp/memory-agent-mcp/tools/recall-context.ts,import,External,QUARANTINE,,medium,broken import path ../lib/session-store.js,false,false
+LeeWay-Standards,LeeWay-Standards/adapters/mcp/planner-agent-mcp/index.ts,import,External,QUARANTINE,,medium,broken import path ./contracts/agent-contracts.js,false,false
+LeeWay-Standards,LeeWay-Standards/adapters/mcp/planner-agent-mcp/index.ts,import,External,QUARANTINE,,medium,broken import path ./tools/break-into-steps.js,false,false
+LeeWay-Standards,LeeWay-Standards/adapters/mcp/planner-agent-mcp/index.ts,import,External,QUARANTINE,,medium,broken import path ./tools/choose-agent.js,false,false
+LeeWay-Standards,LeeWay-Standards/adapters/mcp/planner-agent-mcp/index.ts,import,External,QUARANTINE,,medium,broken import path ./tools/make-plan.js,false,false
+LeeWay-Standards,LeeWay-Standards/adapters/mcp/planner-agent-mcp/index.ts,import,External,QUARANTINE,,medium,broken import path ./tools/suggest-recovery.js,false,false
+LeeWay-Standards,LeeWay-Standards/adapters/mcp/planner-agent-mcp/index.ts,import,External,QUARANTINE,,medium,broken import path ./tools/summarize-mission.js,false,false
+LeeWay-Standards,LeeWay-Standards/adapters/mcp/planner-agent-mcp/test/health-check.node.js,import,External,QUARANTINE,,medium,broken import path ../dist/tools/make-plan.js,false,false
+LeeWay-Standards,LeeWay-Standards/adapters/mcp/planner-agent-mcp/test/health-check.node.js,import,External,QUARANTINE,,medium,broken import path ../dist/tools/choose-agent.js,false,false
+LeeWay-Standards,LeeWay-Standards/adapters/mcp/planner-agent-mcp/test/health-check.node.js,import,External,QUARANTINE,,medium,broken import path ../dist/tools/summarize-mission.js,false,false
+LeeWay-Standards,LeeWay-Standards/adapters/mcp/planner-agent-mcp/tools/choose-agent.ts,import,External,QUARANTINE,,medium,broken import path ../contracts/agent-contracts.js,false,false
+LeeWay-Standards,LeeWay-Standards/adapters/mcp/planner-agent-mcp/tools/choose-agent.ts,import,External,QUARANTINE,,medium,broken import path ../contracts/intent-router-map.js,false,false
+LeeWay-Standards,LeeWay-Standards/adapters/mcp/planner-agent-mcp/tools/make-plan.ts,import,External,QUARANTINE,,medium,broken import path ../contracts/agent-contracts.js,false,false
+LeeWay-Standards,LeeWay-Standards/adapters/mcp/planner-agent-mcp/tools/make-plan.ts,import,External,QUARANTINE,,medium,broken import path ../contracts/intent-router-map.js,false,false
+LeeWay-Standards,LeeWay-Standards/adapters/mcp/planner-agent-mcp/tools/summarize-mission.ts,import,External,QUARANTINE,,medium,broken import path ../contracts/agent-contracts.js,false,false
+LeeWay-Standards,LeeWay-Standards/contracts/agent-contracts.ts,import,External,QUARANTINE,,medium,broken import path ./capability-vocab.js,false,false
+LeeWay-Standards,LeeWay-Standards/contracts/job-contract.ts,import,External,QUARANTINE,,medium,broken import path ./capability-vocab.js,false,false
+LeeWay-Standards,LeeWay-Standards/governance/layers/L2_Controller_VRM/mosfet.regulator.ts,import,External,QUARANTINE,,medium,broken import path ../L1_Governance_BIOS/identity.bios,false,false
+LeeWay-Standards,LeeWay-Standards/governance/layers/L3_Persistence_Memory/Pallium.tsx,import,External,QUARANTINE,,medium,broken import path ./core/eventBus,false,false
+LeeWay-Standards,LeeWay-Standards/governance/layers/L5_Skill_Capability/atom.gating.ts,import,External,QUARANTINE,,medium,broken import path ../L3_Persistence_Memory/database.hub,false,false
+LeeWay-Standards,LeeWay-Standards/governance/layers/L5_Skill_Capability/atom.gating.ts,import,External,QUARANTINE,,medium,broken import path ../L9_Integrity_Sentinel/probe.analyzer,false,false
+LeeWay-Standards,LeeWay-Standards/governance/layers/L6_Dispatch_Center/rtc.sovereign.node.ts,import,External,QUARANTINE,,medium,broken import path ./eventBus,false,false
+LeeWay-Standards,LeeWay-Standards/governance/layers/L7_Execution_Die/gpu.alu.ts,import,External,QUARANTINE,,medium,broken import path ../pipeline/pipeline.cache,false,false
+LeeWay-Standards,LeeWay-Standards/governance/layers/L7_Execution_Die/gpu.alu.ts,import,External,QUARANTINE,,medium,broken import path ../buffers/buffer.pool,false,false
+LeeWay-Standards,LeeWay-Standards/governance/layers/L7_Execution_Die/gpu.alu.ts,import,External,QUARANTINE,,medium,broken import path ./shaders/tensor_matmul.wgsl,false,false
+LeeWay-Standards,LeeWay-Standards/governance/layers/L7_Execution_Die/qwen.alu.ts,import,External,QUARANTINE,,medium,broken import path ../L9_Integrity_Sentinel/probe.analyzer,false,false
+LeeWay-Standards,LeeWay-Standards/governance/layers/L8_Telemetry_Assembly/Diagnostics.tsx,import,External,QUARANTINE,,medium,broken import path ../lib/utils,false,false
+LeeWay-Standards,LeeWay-Standards/governance/layers/L8_Telemetry_Assembly/Diagnostics.tsx,import,External,QUARANTINE,,medium,broken import path ../core/eventBus,false,false
+LeeWay-Standards,LeeWay-Standards/governance/layers/L8_Telemetry_Assembly/janitor.audit.ts,import,External,QUARANTINE,,medium,broken import path ../L10_Orchestrator_Kernel/leeway.kernel,false,false
+LeeWay-Standards,LeeWay-Standards/governance/layers/L8_Telemetry_Assembly/janitor.audit.ts,import,External,QUARANTINE,,medium,broken import path ../L9_Integrity_Sentinel/probe.analyzer,false,false
+LeeWay-Standards,LeeWay-Standards/governance/layers/L9_Integrity_Sentinel/probe.analyzer.ts,import,External,QUARANTINE,,medium,broken import path ../L1_Governance_BIOS/identity.bios,false,false
+LeeWay-Standards,LeeWay-Standards/governance/layers/L9_Integrity_Sentinel/probe.analyzer.ts,import,External,QUARANTINE,,medium,broken import path ../L8_Telemetry_Assembly/janitor.audit,false,false
+LeeWay-Standards,LeeWay-Standards/governance/layers/L9_Interface_Display/App.tsx,import,External,QUARANTINE,,medium,broken import path ./Diagnostics,false,false
+LeeWay-Standards,LeeWay-Standards/governance/layers/L9_Interface_Display/App.tsx,import,External,QUARANTINE,,medium,broken import path ./DatabaseHub,false,false
+LeeWay-Standards,LeeWay-Standards/governance/layers/L9_Interface_Display/App.tsx,import,External,QUARANTINE,,medium,broken import path ./Pallium,false,false
+LeeWay-Standards,LeeWay-Standards/governance/layers/L9_Interface_Display/App.tsx,import,External,QUARANTINE,,medium,broken import path ./LeeWayUniverse,false,false
+LeeWay-Standards,LeeWay-Standards/governance/layers/L9_Interface_Display/App.tsx,import,External,QUARANTINE,,medium,broken import path ./VerifiedAgentVM,false,false
+LeeWay-Standards,LeeWay-Standards/governance/layers/L9_Interface_Display/App.tsx,import,External,QUARANTINE,,medium,broken import path ./core/rtc.sovereign.node,false,false
+LeeWay-Standards,LeeWay-Standards/services/sfu/src/agents/aria.ts,import,External,QUARANTINE,,medium,broken import path ./types.js,false,false
+LeeWay-Standards,LeeWay-Standards/services/sfu/src/agents/bus.ts,import,External,QUARANTINE,,medium,broken import path ./types.js,false,false
+LeeWay-Standards,LeeWay-Standards/services/sfu/src/agents/governance.ts,import,External,QUARANTINE,,medium,broken import path ../logger.js,false,false
+LeeWay-Standards,LeeWay-Standards/services/sfu/src/agents/governance.ts,import,External,QUARANTINE,,medium,broken import path ./types.js,false,false
+LeeWay-Standards,LeeWay-Standards/services/sfu/src/agents/governor.ts,import,External,QUARANTINE,,medium,broken import path ../logger.js,false,false
+LeeWay-Standards,LeeWay-Standards/services/sfu/src/agents/governor.ts,import,External,QUARANTINE,,medium,broken import path ./governance.js,false,false
+LeeWay-Standards,LeeWay-Standards/services/sfu/src/agents/governor.ts,import,External,QUARANTINE,,medium,broken import path ./types.js,false,false
+LeeWay-Standards,LeeWay-Standards/services/sfu/src/agents/governor.ts,import,External,QUARANTINE,,medium,broken import path ./runtime.js,false,false
+LeeWay-Standards,LeeWay-Standards/services/sfu/src/agents/nexus.ts,import,External,QUARANTINE,,medium,broken import path ./types.js,false,false
+LeeWay-Standards,LeeWay-Standards/services/sfu/src/agents/observer.ts,import,External,QUARANTINE,,medium,broken import path ./types.js,false,false
+LeeWay-Standards,LeeWay-Standards/services/sfu/src/agents/registry.ts,import,External,QUARANTINE,,medium,broken import path ./types.js,false,false
+LeeWay-Standards,LeeWay-Standards/services/sfu/src/agents/registry.ts,import,External,QUARANTINE,,medium,broken import path ./bus.js,false,false
+LeeWay-Standards,LeeWay-Standards/services/sfu/src/agents/registry.ts,import,External,QUARANTINE,,medium,broken import path ./runtime.js,false,false
+LeeWay-Standards,LeeWay-Standards/services/sfu/src/agents/registry.ts,import,External,QUARANTINE,,medium,broken import path ./aria.js,false,false
+LeeWay-Standards,LeeWay-Standards/services/sfu/src/agents/registry.ts,import,External,QUARANTINE,,medium,broken import path ./vector.js,false,false
+LeeWay-Standards,LeeWay-Standards/services/sfu/src/agents/registry.ts,import,External,QUARANTINE,,medium,broken import path ./ward.js,false,false
+LeeWay-Standards,LeeWay-Standards/services/sfu/src/agents/registry.ts,import,External,QUARANTINE,,medium,broken import path ./sentinel.js,false,false
+LeeWay-Standards,LeeWay-Standards/services/sfu/src/agents/registry.ts,import,External,QUARANTINE,,medium,broken import path ./nexus.js,false,false
+LeeWay-Standards,LeeWay-Standards/services/sfu/src/agents/registry.ts,import,External,QUARANTINE,,medium,broken import path ./repair.js,false,false
+LeeWay-Standards,LeeWay-Standards/services/sfu/src/agents/registry.ts,import,External,QUARANTINE,,medium,broken import path ./governor.js,false,false
+LeeWay-Standards,LeeWay-Standards/services/sfu/src/agents/registry.ts,import,External,QUARANTINE,,medium,broken import path ./scaler.js,false,false
+LeeWay-Standards,LeeWay-Standards/services/sfu/src/agents/registry.ts,import,External,QUARANTINE,,medium,broken import path ./observer.js,false,false
+LeeWay-Standards,LeeWay-Standards/services/sfu/src/agents/registry.ts,import,External,QUARANTINE,,medium,broken import path ../logger.js,false,false
+LeeWay-Standards,LeeWay-Standards/services/sfu/src/agents/repair.ts,import,External,QUARANTINE,,medium,broken import path ../logger.js,false,false
+LeeWay-Standards,LeeWay-Standards/services/sfu/src/agents/repair.ts,import,External,QUARANTINE,,medium,broken import path ./types.js,false,false
+LeeWay-Standards,LeeWay-Standards/services/sfu/src/agents/repair.ts,import,External,QUARANTINE,,medium,broken import path ./runtime.js,false,false
+LeeWay-Standards,LeeWay-Standards/services/sfu/src/agents/runtime.ts,import,External,QUARANTINE,,medium,broken import path ../logger.js,false,false
+LeeWay-Standards,LeeWay-Standards/services/sfu/src/agents/runtime.ts,import,External,QUARANTINE,,medium,broken import path ./governance.js,false,false
+LeeWay-Standards,LeeWay-Standards/services/sfu/src/agents/runtime.ts,import,External,QUARANTINE,,medium,broken import path ./types.js,false,false
+LeeWay-Standards,LeeWay-Standards/services/sfu/src/agents/scaler.ts,import,External,QUARANTINE,,medium,broken import path ../logger.js,false,false
+LeeWay-Standards,LeeWay-Standards/services/sfu/src/agents/scaler.ts,import,External,QUARANTINE,,medium,broken import path ../mediasoup/room.js,false,false
+LeeWay-Standards,LeeWay-Standards/services/sfu/src/agents/scaler.ts,import,External,QUARANTINE,,medium,broken import path ./bus.js,false,false
+LeeWay-Standards,LeeWay-Standards/services/sfu/src/agents/scaler.ts,import,External,QUARANTINE,,medium,broken import path ./types.js,false,false
+LeeWay-Standards,LeeWay-Standards/services/sfu/src/agents/sentinel.ts,import,External,QUARANTINE,,medium,broken import path ../metrics.js,false,false
+LeeWay-Standards,LeeWay-Standards/services/sfu/src/agents/sentinel.ts,import,External,QUARANTINE,,medium,broken import path ./types.js,false,false
+LeeWay-Standards,LeeWay-Standards/services/sfu/src/agents/vector.ts,import,External,QUARANTINE,,medium,broken import path ../metrics.js,false,false
+LeeWay-Standards,LeeWay-Standards/services/sfu/src/agents/vector.ts,import,External,QUARANTINE,,medium,broken import path ../mediasoup/room.js,false,false
+LeeWay-Standards,LeeWay-Standards/services/sfu/src/agents/vector.ts,import,External,QUARANTINE,,medium,broken import path ./types.js,false,false
+LeeWay-Standards,LeeWay-Standards/services/sfu/src/agents/ward.ts,import,External,QUARANTINE,,medium,broken import path ../mediasoup/room.js,false,false
+LeeWay-Standards,LeeWay-Standards/services/sfu/src/agents/ward.ts,import,External,QUARANTINE,,medium,broken import path ../logger.js,false,false
+LeeWay-Standards,LeeWay-Standards/services/sfu/src/agents/ward.ts,import,External,QUARANTINE,,medium,broken import path ./types.js,false,false
+LeeWay-Standards,LeeWay-Standards/services/sfu/src/auth.ts,import,External,QUARANTINE,,medium,broken import path ./config.js,false,false
+LeeWay-Standards,LeeWay-Standards/services/sfu/src/governance-guard.ts,import,External,QUARANTINE,,medium,broken import path ./logger.js,false,false
+LeeWay-Standards,LeeWay-Standards/services/sfu/src/guardian/summary-worker.ts,import,External,QUARANTINE,,medium,broken import path ./stats-worker.js,false,false
+LeeWay-Standards,LeeWay-Standards/services/sfu/src/guardian/summary-worker.ts,import,External,QUARANTINE,,medium,broken import path ./runtime-mode.js,false,false
+LeeWay-Standards,LeeWay-Standards/services/sfu/src/index.ts,import,External,QUARANTINE,,medium,broken import path ./governance-guard.js,false,false
+LeeWay-Standards,LeeWay-Standards/services/sfu/src/index.ts,import,External,QUARANTINE,,medium,broken import path ./mediasoup/worker.js,false,false
+LeeWay-Standards,LeeWay-Standards/services/sfu/src/index.ts,import,External,QUARANTINE,,medium,broken import path ./server.js,false,false
+LeeWay-Standards,LeeWay-Standards/services/sfu/src/index.ts,import,External,QUARANTINE,,medium,broken import path ./agents/registry.js,false,false
+LeeWay-Standards,LeeWay-Standards/services/sfu/src/index.ts,import,External,QUARANTINE,,medium,broken import path ./logger.js,false,false
+LeeWay-Standards,LeeWay-Standards/services/sfu/src/logger.ts,import,External,QUARANTINE,,medium,broken import path ./config.js,false,false
+LeeWay-Standards,LeeWay-Standards/services/sfu/src/mediasoup/room.ts,import,External,QUARANTINE,,medium,broken import path ./worker.js,false,false
+LeeWay-Standards,LeeWay-Standards/services/sfu/src/mediasoup/room.ts,import,External,QUARANTINE,,medium,broken import path ../config.js,false,false
+LeeWay-Standards,LeeWay-Standards/services/sfu/src/mediasoup/room.ts,import,External,QUARANTINE,,medium,broken import path ../logger.js,false,false
+LeeWay-Standards,LeeWay-Standards/services/sfu/src/mediasoup/room.ts,import,External,QUARANTINE,,medium,broken import path ../metrics.js,false,false
+LeeWay-Standards,LeeWay-Standards/services/sfu/src/mediasoup/worker.ts,import,External,QUARANTINE,,medium,broken import path ../config.js,false,false
+LeeWay-Standards,LeeWay-Standards/services/sfu/src/mediasoup/worker.ts,import,External,QUARANTINE,,medium,broken import path ../logger.js,false,false
+LeeWay-Standards,LeeWay-Standards/services/sfu/src/server.ts,import,External,QUARANTINE,,medium,broken import path ./metrics.js,false,false
+LeeWay-Standards,LeeWay-Standards/services/sfu/src/server.ts,import,External,QUARANTINE,,medium,broken import path ./signaling/handler.js,false,false
+LeeWay-Standards,LeeWay-Standards/services/sfu/src/server.ts,import,External,QUARANTINE,,medium,broken import path ./auth.js,false,false
+LeeWay-Standards,LeeWay-Standards/services/sfu/src/server.ts,import,External,QUARANTINE,,medium,broken import path ./logger.js,false,false
+LeeWay-Standards,LeeWay-Standards/services/sfu/src/server.ts,import,External,QUARANTINE,,medium,broken import path ./config.js,false,false
+LeeWay-Standards,LeeWay-Standards/services/sfu/src/server.ts,import,External,QUARANTINE,,medium,broken import path ./agents/registry.js,false,false
+LeeWay-Standards,LeeWay-Standards/services/sfu/src/server.ts,import,External,QUARANTINE,,medium,broken import path ./mediasoup/room.js,false,false
+LeeWay-Standards,LeeWay-Standards/services/sfu/src/signaling/handler.ts,import,External,QUARANTINE,,medium,broken import path ../auth.js,false,false
+LeeWay-Standards,LeeWay-Standards/services/sfu/src/signaling/handler.ts,import,External,QUARANTINE,,medium,broken import path ../mediasoup/room.js,false,false
+LeeWay-Standards,LeeWay-Standards/services/sfu/src/signaling/handler.ts,import,External,QUARANTINE,,medium,broken import path ../logger.js,false,false
+LeeWay-Standards,LeeWay-Standards/services/sfu/src/signaling/handler.ts,import,External,QUARANTINE,,medium,broken import path ../metrics.js,false,false
+LeeWay-Standards,LeeWay-Standards/services/sfu/src/signaling/handler.ts,import,External,QUARANTINE,,medium,broken import path ../config.js,false,false
+LeeWay-Standards,LeeWay-Standards/services/sfu/src/signaling/handler.ts,import,External,QUARANTINE,,medium,broken import path ../agents/registry.js,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/AdamCortex.ts,import,External,QUARANTINE,,medium,broken import path ../core/LLMProvider,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/AdamCortex.ts,import,External,QUARANTINE,,medium,broken import path ../core/EventBus,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/AdamCortex.ts,import,External,QUARANTINE,,medium,broken import path ../core/agent_lee_prompt_assembler,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/AdamCortex.ts,import,External,QUARANTINE,,medium,broken import path ../core/ReportWriter,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/AgentLee.ts,import,External,QUARANTINE,,medium,broken import path ../core/AgentRouter,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/AgentLee.ts,import,External,QUARANTINE,,medium,broken import path ../core/EventBus,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/AgentLee.ts,import,External,QUARANTINE,,medium,broken import path ../core/agent_lee_prompt_assembler,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/AgentLee.ts,import,External,QUARANTINE,,medium,broken import path ../core/LLMProvider,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/AgentLeeBT.ts,import,External,QUARANTINE,,medium,broken import path ../core/AgentBase,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/AgentLeeBT.ts,import,External,QUARANTINE,,medium,broken import path ../core/BehaviorTree,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/Aria.ts,import,External,QUARANTINE,,medium,broken import path ../core/LeewayInferenceClient,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/Aria.ts,import,External,QUARANTINE,,medium,broken import path ../core/EventBus,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/Aria.ts,import,External,QUARANTINE,,medium,broken import path ../core/agent_lee_prompt_assembler,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/Atlas.ts,import,External,QUARANTINE,,medium,broken import path ../core/LeewayInferenceClient,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/Atlas.ts,import,External,QUARANTINE,,medium,broken import path ../core/EventBus,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/Atlas.ts,import,External,QUARANTINE,,medium,broken import path ../core/agent_lee_prompt_assembler,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/BrainSentinel.ts,import,External,QUARANTINE,,medium,broken import path ../core/ReportWriter,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/BrainSentinel.ts,import,External,QUARANTINE,,medium,broken import path ../core/EventBus,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/BugHunterForge.ts,import,External,QUARANTINE,,medium,broken import path ../core/LeewayInferenceClient,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/BugHunterForge.ts,import,External,QUARANTINE,,medium,broken import path ../core/EventBus,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/BugHunterForge.ts,import,External,QUARANTINE,,medium,broken import path ../core/agent_lee_prompt_assembler,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/BugHunterForge.ts,import,External,QUARANTINE,,medium,broken import path ../core/ReportWriter,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/ClerkArchive.ts,import,External,QUARANTINE,,medium,broken import path ../core/ReportWriter,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/ClerkArchive.ts,import,External,QUARANTINE,,medium,broken import path ../core/ReportIndex,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/ClerkArchive.ts,import,External,QUARANTINE,,medium,broken import path ../core/EventBus,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/ClerkArchive.ts,import,External,QUARANTINE,,medium,broken import path ../core/agent_lee_prompt_assembler,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/ClerkArchive.ts,import,External,QUARANTINE,,medium,broken import path ../core/LeewayInferenceClient,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/Echo.ts,import,External,QUARANTINE,,medium,broken import path ../core/LeewayInferenceClient,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/Echo.ts,import,External,QUARANTINE,,medium,broken import path ../core/VoiceService,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/Echo.ts,import,External,QUARANTINE,,medium,broken import path ../core/EventBus,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/Echo.ts,import,External,QUARANTINE,,medium,broken import path ../core/agent_lee_prompt_assembler,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/GabrielCortex.ts,import,External,QUARANTINE,,medium,broken import path ../core/LeewayInferenceClient,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/GabrielCortex.ts,import,External,QUARANTINE,,medium,broken import path ../core/EventBus,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/GabrielCortex.ts,import,External,QUARANTINE,,medium,broken import path ../core/agent_lee_prompt_assembler,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/GabrielCortex.ts,import,External,QUARANTINE,,medium,broken import path ../core/ReportWriter,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/GuardAegis.ts,import,External,QUARANTINE,,medium,broken import path ../core/WorldRegistry,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/GuardAegis.ts,import,External,QUARANTINE,,medium,broken import path ../core/ReportWriter,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/GuardAegis.ts,import,External,QUARANTINE,,medium,broken import path ../core/EventBus,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/JanitorSentinel.ts,import,External,QUARANTINE,,medium,broken import path ../core/RetentionCleaner,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/JanitorSentinel.ts,import,External,QUARANTINE,,medium,broken import path ../core/ReportWriter,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/JanitorSentinel.ts,import,External,QUARANTINE,,medium,broken import path ../core/ReportIndex,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/JanitorSentinel.ts,import,External,QUARANTINE,,medium,broken import path ../core/EventBus,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/JanitorSentinel.ts,import,External,QUARANTINE,,medium,broken import path ../core/TaskGraph,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/LeewayStandardsAgent.ts,import,External,QUARANTINE,,medium,broken import path ../core/ReportWriter,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/LeewayStandardsAgent.ts,import,External,QUARANTINE,,medium,broken import path ../core/EventBus,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/LeewayStandardsAgent.ts,import,External,QUARANTINE,,medium,broken import path ../core/MemoryDB,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/LibrarianAegis.ts,import,External,QUARANTINE,,medium,broken import path ../core/ReportWriter,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/LibrarianAegis.ts,import,External,QUARANTINE,,medium,broken import path ../core/EventBus,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/LibrarianAegis.ts,import,External,QUARANTINE,,medium,broken import path ../core/LeewayInferenceClient,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/LibrarianAegis.ts,import,External,QUARANTINE,,medium,broken import path ../core/agent_lee_prompt_assembler,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/LilyCortex.ts,import,External,QUARANTINE,,medium,broken import path ../core/LeewayInferenceClient,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/LilyCortex.ts,import,External,QUARANTINE,,medium,broken import path ../core/EventBus,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/LilyCortex.ts,import,External,QUARANTINE,,medium,broken import path ../core/agent_lee_prompt_assembler,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/LilyCortex.ts,import,External,QUARANTINE,,medium,broken import path ../core/ReportWriter,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/LiveConductorAgent.ts,import,External,QUARANTINE,,medium,broken import path ../core/EventBus,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/LiveConductorAgent.ts,import,External,QUARANTINE,,medium,broken import path ../voice/client_core/VoiceSession,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/MarshalVerify.ts,import,External,QUARANTINE,,medium,broken import path ../core/GovernanceContract,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/MarshalVerify.ts,import,External,QUARANTINE,,medium,broken import path ../core/AgentRouter,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/MarshalVerify.ts,import,External,QUARANTINE,,medium,broken import path ../core/TaskGraph,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/MarshalVerify.ts,import,External,QUARANTINE,,medium,broken import path ../core/ReportWriter,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/MarshalVerify.ts,import,External,QUARANTINE,,medium,broken import path ../core/EventBus,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/MarshalVerify.ts,import,External,QUARANTINE,,medium,broken import path ../core/VerificationCorps,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/Nexus.ts,import,External,QUARANTINE,,medium,broken import path ../core/LeewayInferenceClient,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/Nexus.ts,import,External,QUARANTINE,,medium,broken import path ../core/EventBus,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/Nexus.ts,import,External,QUARANTINE,,medium,broken import path ../core/agent_lee_prompt_assembler,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/Nova.ts,import,External,QUARANTINE,,medium,broken import path ../core/LeewayInferenceClient,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/Nova.ts,import,External,QUARANTINE,,medium,broken import path ../core/EventBus,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/Nova.ts,import,External,QUARANTINE,,medium,broken import path ../core/agent_lee_prompt_assembler,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/Pixel.ts,import,External,QUARANTINE,,medium,broken import path ../core/LeewayInferenceClient,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/Pixel.ts,import,External,QUARANTINE,,medium,broken import path ../core/EventBus,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/Pixel.ts,import,External,QUARANTINE,,medium,broken import path ../services/leeway_inference,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/Pixel.ts,import,External,QUARANTINE,,medium,broken import path ../core/agent_lee_prompt_assembler,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/RouterAgent.ts,import,External,QUARANTINE,,medium,broken import path ../core/EventBus,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/RouterAgent.ts,import,External,QUARANTINE,,medium,broken import path ../core/agent_lee_prompt_assembler,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/SafetyRedactionAgent.ts,import,External,QUARANTINE,,medium,broken import path ../core/EventBus,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/Sage.ts,import,External,QUARANTINE,,medium,broken import path ../core/LeewayInferenceClient,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/Sage.ts,import,External,QUARANTINE,,medium,broken import path ../core/EventBus,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/Sage.ts,import,External,QUARANTINE,,medium,broken import path ../core/AuthProvider,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/Sage.ts,import,External,QUARANTINE,,medium,broken import path ../core/MemoryDB,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/Sage.ts,import,External,QUARANTINE,,medium,broken import path ../core/agent_lee_prompt_assembler,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/ScribeArchive.ts,import,External,QUARANTINE,,medium,broken import path ../core/ReportWriter,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/ScribeArchive.ts,import,External,QUARANTINE,,medium,broken import path ../core/EventBus,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/ScribeArchive.ts,import,External,QUARANTINE,,medium,broken import path ../core/LeewayInferenceClient,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/ScribeArchive.ts,import,External,QUARANTINE,,medium,broken import path ../core/agent_lee_prompt_assembler,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/Shield.ts,import,External,QUARANTINE,,medium,broken import path ../core/LeewayInferenceClient,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/Shield.ts,import,External,QUARANTINE,,medium,broken import path ../core/EventBus,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/Shield.ts,import,External,QUARANTINE,,medium,broken import path ../core/ReportWriter,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/Shield.ts,import,External,QUARANTINE,,medium,broken import path ../core/agent_lee_prompt_assembler,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/Shield.ts,import,External,QUARANTINE,,medium,broken import path ../core/GovernanceContract,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/StreamingSTTAgent.ts,import,External,QUARANTINE,,medium,broken import path ../core/EventBus,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/StreamingTTSAgent.ts,import,External,QUARANTINE,,medium,broken import path ../core/EventBus,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/SyntaxForge.ts,import,External,QUARANTINE,,medium,broken import path ../core/LeewayInferenceClient,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/SyntaxForge.ts,import,External,QUARANTINE,,medium,broken import path ../core/EventBus,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/SyntaxForge.ts,import,External,QUARANTINE,,medium,broken import path ../core/agent_lee_prompt_assembler,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/SyntaxForge.ts,import,External,QUARANTINE,,medium,broken import path ../core/ReportWriter,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/rtc/aria.ts,import,External,QUARANTINE,,medium,broken import path ./types.js,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/rtc/bus.ts,import,External,QUARANTINE,,medium,broken import path ./types.js,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/rtc/governance.ts,import,External,QUARANTINE,,medium,broken import path ../logger.js,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/rtc/governance.ts,import,External,QUARANTINE,,medium,broken import path ./types.js,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/rtc/governor.ts,import,External,QUARANTINE,,medium,broken import path ../logger.js,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/rtc/governor.ts,import,External,QUARANTINE,,medium,broken import path ./governance.js,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/rtc/governor.ts,import,External,QUARANTINE,,medium,broken import path ./types.js,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/rtc/governor.ts,import,External,QUARANTINE,,medium,broken import path ./runtime.js,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/rtc/nexus.ts,import,External,QUARANTINE,,medium,broken import path ./types.js,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/rtc/observer.ts,import,External,QUARANTINE,,medium,broken import path ./types.js,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/rtc/registry.ts,import,External,QUARANTINE,,medium,broken import path ./types.js,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/rtc/registry.ts,import,External,QUARANTINE,,medium,broken import path ./bus.js,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/rtc/registry.ts,import,External,QUARANTINE,,medium,broken import path ./runtime.js,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/rtc/registry.ts,import,External,QUARANTINE,,medium,broken import path ./aria.js,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/rtc/registry.ts,import,External,QUARANTINE,,medium,broken import path ./vector.js,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/rtc/registry.ts,import,External,QUARANTINE,,medium,broken import path ./ward.js,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/rtc/registry.ts,import,External,QUARANTINE,,medium,broken import path ./sentinel.js,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/rtc/registry.ts,import,External,QUARANTINE,,medium,broken import path ./nexus.js,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/rtc/registry.ts,import,External,QUARANTINE,,medium,broken import path ./repair.js,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/rtc/registry.ts,import,External,QUARANTINE,,medium,broken import path ./governor.js,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/rtc/registry.ts,import,External,QUARANTINE,,medium,broken import path ./scaler.js,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/rtc/registry.ts,import,External,QUARANTINE,,medium,broken import path ./observer.js,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/rtc/registry.ts,import,External,QUARANTINE,,medium,broken import path ../logger.js,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/rtc/repair.ts,import,External,QUARANTINE,,medium,broken import path ../logger.js,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/rtc/repair.ts,import,External,QUARANTINE,,medium,broken import path ./types.js,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/rtc/repair.ts,import,External,QUARANTINE,,medium,broken import path ./runtime.js,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/rtc/runtime.ts,import,External,QUARANTINE,,medium,broken import path ../logger.js,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/rtc/runtime.ts,import,External,QUARANTINE,,medium,broken import path ./governance.js,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/rtc/runtime.ts,import,External,QUARANTINE,,medium,broken import path ./types.js,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/rtc/scaler.ts,import,External,QUARANTINE,,medium,broken import path ../logger.js,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/rtc/scaler.ts,import,External,QUARANTINE,,medium,broken import path ../mediasoup/room.js,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/rtc/scaler.ts,import,External,QUARANTINE,,medium,broken import path ./bus.js,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/rtc/scaler.ts,import,External,QUARANTINE,,medium,broken import path ./types.js,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/rtc/sentinel.ts,import,External,QUARANTINE,,medium,broken import path ../metrics.js,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/rtc/sentinel.ts,import,External,QUARANTINE,,medium,broken import path ./types.js,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/rtc/vector.ts,import,External,QUARANTINE,,medium,broken import path ../metrics.js,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/rtc/vector.ts,import,External,QUARANTINE,,medium,broken import path ../mediasoup/room.js,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/rtc/vector.ts,import,External,QUARANTINE,,medium,broken import path ./types.js,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/rtc/ward.ts,import,External,QUARANTINE,,medium,broken import path ../mediasoup/room.js,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/rtc/ward.ts,import,External,QUARANTINE,,medium,broken import path ../logger.js,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/rtc/ward.ts,import,External,QUARANTINE,,medium,broken import path ./types.js,false,false
+LeeWay-Standards,LeeWay-Standards/src/core/AgentManager.ts,import,External,QUARANTINE,,medium,broken import path ../agents/AgentLeeBT,false,false
+LeeWay-Standards,LeeWay-Standards/src/core/AgentOrchestrationPipeline.ts,import,External,QUARANTINE,,medium,broken import path ../agents/AgentLee,false,false
+LeeWay-Standards,LeeWay-Standards/src/core/AgentOrchestrationPipeline.ts,import,External,QUARANTINE,,medium,broken import path ./AgentLeePersonaPolicy,false,false
+LeeWay-Standards,LeeWay-Standards/src/core/AgentOrchestrationPipeline.ts,import,External,QUARANTINE,,medium,broken import path ./AgentLeeSpeechShaper,false,false
+LeeWay-Standards,LeeWay-Standards/src/core/AgentOrchestrationPipeline.ts,import,External,QUARANTINE,,medium,broken import path ./AgentLeeTurnManager,false,false
+LeeWay-Standards,LeeWay-Standards/src/core/launchpad/launchRunner.ts,import,External,QUARANTINE,,medium,broken import path ./palliumClient,false,false
+LeeWay-Standards,LeeWay-Standards/src/core/RTCInitializer.ts,import,External,QUARANTINE,,medium,broken import path ../cortices/sensory/RTCInitializer,false,false
+LeeWay-Standards,LeeWay-Standards/src/core/security/recovery.engine.ts,import,External,QUARANTINE,,medium,broken import path ./creator.authority,false,false
+LeeWay-Standards,LeeWay-Standards/src/core/security/recovery.engine.ts,import,External,QUARANTINE,,medium,broken import path ./policy.engine,false,false
+LeeWay-Standards,LeeWay-Standards/src/core/security/security.coordinator.ts,import,External,QUARANTINE,,medium,broken import path ./creator.authority,false,false
+LeeWay-Standards,LeeWay-Standards/src/core/security/security.coordinator.ts,import,External,QUARANTINE,,medium,broken import path ./policy.engine,false,false
+LeeWay-Standards,LeeWay-Standards/src/core/security/security.coordinator.ts,import,External,QUARANTINE,,medium,broken import path ./recovery.engine,false,false
+LeeWay-Standards,LeeWay-Standards/src/core/security/security.init.ts,import,External,QUARANTINE,,medium,broken import path ./security.coordinator,false,false
+LeeWay-Standards,LeeWay-Standards/src/core/security/security.init.ts,import,External,QUARANTINE,,medium,broken import path ./creator.authority,false,false
+LeeWay-Standards,LeeWay-Standards/src/core/security/security.init.ts,import,External,QUARANTINE,,medium,broken import path ./policy.engine,false,false
+LeeWay-Standards,LeeWay-Standards/src/core/security/security.init.ts,import,External,QUARANTINE,,medium,broken import path ./recovery.engine,false,false
+LeeWay-Standards,LeeWay-Standards/src/runtime/agentic/index.ts,import,External,QUARANTINE,,medium,broken import path ../legacy-restored/core/agent_lee_prompt_assembler,false,false
+LeeWay-Standards,LeeWay-Standards/src/runtime/call/CallMode.ts,import,External,QUARANTINE,,medium,broken import path ../voice/voice-output,false,false
+LeeWay-Standards,LeeWay-Standards/src/runtime/call/CallMode.ts,import,External,QUARANTINE,,medium,broken import path ../voice/voice-config,false,false
+LeeWay-Standards,LeeWay-Standards/src/runtime/engines/gpu.adapter.js,import,External,QUARANTINE,,medium,broken import path ../gpu/core/gpu.bootstrap.js,false,false
+LeeWay-Standards,LeeWay-Standards/src/runtime/engines/gpu.adapter.js,import,External,QUARANTINE,,medium,broken import path ../gpu/control/gpu.controller.bridge.js,false,false
+LeeWay-Standards,LeeWay-Standards/src/runtime/engines/gpu.adapter.js,import,External,QUARANTINE,,medium,broken import path ../gpu/dispatch/compute.dispatch.js,false,false
+LeeWay-Standards,LeeWay-Standards/src/runtime/engines/graph.engine.js,import,External,QUARANTINE,,medium,broken import path ../room-system/events.js,false,false
+LeeWay-Standards,LeeWay-Standards/src/runtime/engines/room-system.adapter.js,import,External,QUARANTINE,,medium,broken import path ../room-system/auth.js,false,false
+LeeWay-Standards,LeeWay-Standards/src/runtime/engines/room-system.adapter.js,import,External,QUARANTINE,,medium,broken import path ../room-system/capabilities.js,false,false
+LeeWay-Standards,LeeWay-Standards/src/runtime/engines/room-system.adapter.js,import,External,QUARANTINE,,medium,broken import path ../room-system/rooms.js,false,false
+LeeWay-Standards,LeeWay-Standards/src/runtime/engines/room-system.adapter.js,import,External,QUARANTINE,,medium,broken import path ../room-system/admin.js,false,false
+LeeWay-Standards,LeeWay-Standards/src/runtime/engines/room-system.adapter.js,import,External,QUARANTINE,,medium,broken import path ../room-system/runtime.js,false,false
+LeeWay-Standards,LeeWay-Standards/src/runtime/engines/room-system.adapter.js,import,External,QUARANTINE,,medium,broken import path ../room-system/events.js,false,false
+LeeWay-Standards,LeeWay-Standards/src/runtime/engines/rtc.adapter.js,import,External,QUARANTINE,,medium,broken import path ../gpu/rtc/gpu.rtc.bridge.js,false,false
+LeeWay-Standards,LeeWay-Standards/src/voice/client_core/standaloneAgent.ts,import,External,QUARANTINE,,medium,broken import path ./ui,false,false
+LeeWay-Standards,LeeWay-Standards/src/voice/client_core/standaloneAgent.ts,import,External,QUARANTINE,,medium,broken import path ./lib/agentLeePersona,false,false
+LeeWay-Standards,LeeWay-Standards/src/voice/client_core/wsAgent.ts,import,External,QUARANTINE,,medium,broken import path ./ui,false,false
+LeeWay-Standards,LeeWay-Standards/adapters/mcp/contracts/agent-lee-core.contract.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/adapters/mcp/contracts/capability-vocab.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/adapters/mcp/contracts/intent-router-map.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/adapters/mcp/contracts/job-contract.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/adapters/mcp/desktop-commander-agent-mcp/lib/path-guard.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/adapters/mcp/desktop-commander-agent-mcp/tools/capture-state.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/adapters/mcp/desktop-commander-agent-mcp/tools/kill-process.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/adapters/mcp/desktop-commander-agent-mcp/tools/open-app.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/adapters/mcp/desktop-commander-agent-mcp/tools/read-file.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/adapters/mcp/desktop-commander-agent-mcp/tools/run-terminal.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/adapters/mcp/desktop-commander-agent-mcp/tools/write-file.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/adapters/mcp/health-sweep.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/adapters/mcp/memory-agent-mcp/lib/session-store.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/adapters/mcp/memory-agent-mcp/tools/build-context-packet.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/adapters/mcp/memory-agent-mcp/tools/compress-session.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/adapters/mcp/memory-agent-mcp/tools/fetch-related-episodes.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/adapters/mcp/memory-agent-mcp/tools/recall-context.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/adapters/mcp/memory-agent-mcp/tools/write-summary.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/adapters/mcp/planner-agent-mcp/contracts/intent-router-map.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/adapters/mcp/planner-agent-mcp/tools/break-into-steps.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/adapters/mcp/planner-agent-mcp/tools/suggest-recovery.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/adapters/mcp/sync-registry.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/adapters/mcp/vscode-mcp-tooling/src/bridge.js,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/adapters/mcp/vscode-mcp-tooling/src/tool.js,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/contracts/agent-lee-behavior-policies.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/contracts/agent-lee-core.contract.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/contracts/capability-vocab.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/contracts/intent-router-map.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/contracts/job-contract.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/governance/layers/L2_Controller_VRM/mosfet.regulator.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/governance/layers/L3_Persistence_Memory/DatabaseHub.tsx,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/governance/layers/L3_Persistence_Memory/Pallium.tsx,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/governance/layers/L4_WorkflowProtocol/fsm.js,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/governance/layers/L5_SkillCapability/tensor.skill.js,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/governance/layers/L5_Skill_Capability/atom.gating.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/governance/layers/L6_Dispatch_Center/rtc.sovereign.node.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/governance/layers/L7_Execution_Die/gpu.alu.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/governance/layers/L7_Execution_Die/qwen.alu.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/governance/layers/L8_Telemetry_Assembly/Diagnostics.tsx,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/governance/layers/L8_Telemetry_Assembly/janitor.audit.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/governance/layers/L9_Integrity_Sentinel/probe.analyzer.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/services/sfu/src/agents/aria.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/services/sfu/src/agents/bus.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/services/sfu/src/agents/governance.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/services/sfu/src/agents/governor.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/services/sfu/src/agents/nexus.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/services/sfu/src/agents/observer.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/services/sfu/src/agents/registry.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/services/sfu/src/agents/repair.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/services/sfu/src/agents/runtime.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/services/sfu/src/agents/scaler.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/services/sfu/src/agents/sentinel.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/services/sfu/src/agents/vector.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/services/sfu/src/agents/ward.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/services/sfu/src/auth.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/services/sfu/src/config.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/services/sfu/src/governance-guard.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/services/sfu/src/guardian/summary-worker.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/services/sfu/src/logger.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/services/sfu/src/mediasoup/room.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/services/sfu/src/mediasoup/worker.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/services/sfu/src/server.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/services/sfu/src/signaling/handler.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/AdamCortex.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/AgentLee.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/AgentLeeBT.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/Aria.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/Atlas.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/BrainSentinel.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/BugHunterForge.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/ClerkArchive.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/GabrielCortex.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/GuardAegis.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/JanitorSentinel.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/LeewayStandardsAgent.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/LibrarianAegis.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/LilyCortex.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/LiveConductorAgent.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/MarshalVerify.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/Nexus.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/Nova.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/Pixel.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/RouterAgent.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/SafetyRedactionAgent.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/ScribeArchive.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/StreamingSTTAgent.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/StreamingTTSAgent.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/SyntaxForge.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/legacy/VisionAgent.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/rtc/aria.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/rtc/bus.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/rtc/governance.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/rtc/governor.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/rtc/nexus.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/rtc/observer.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/rtc/registry.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/rtc/repair.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/rtc/runtime.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/rtc/scaler.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/rtc/sentinel.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/rtc/vector.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/rtc/ward.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/agents/service/governance/governance-boot.js,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/cli/leeway.js,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/core/AgentLeeCollectiveRuntime.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/core/AgentLeeRuntimeBootstrap.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/core/AgentManager.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/core/agent_lee_system_awareness.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/core/AuthProvider.tsx,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/core/BehaviorTree.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/core/CheckpointManager.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/core/dbOps.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/core/DeviceTelemetry.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/core/diagnostics_bridge.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/core/execution/ExecutionLayer.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/core/execution/StudioExecutionController.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/core/launchpad/launchRunner.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/core/launchpad/memoryLakeClient.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/core/leeway-rtc-setup.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/core/leeway_voice_custom.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/core/LLMProvider.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/core/model_lane_policy.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/core/MultiDatabaseManager.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/core/NativeBridge.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/core/RetentionCleaner.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/core/RTCInitializer.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/core/runtime/executionKernel.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/core/runtime/scheduler.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/core/runtime/taskBroker.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/core/SchemaRegistry.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/core/security/creator.authority.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/core/security/InputFirewallAgent.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/core/security/policy.engine.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/core/security/recovery.engine.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/core/security/security.coordinator.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/core/security/security.init.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/core/ToolRegistry.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/core/ttsBridge.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/core/VoiceService.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/core/WidgetCommandController.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/core/WorldState.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/runtime/call/CallMode.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/runtime/engines/audit.engine.js,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/runtime/engines/cortices-adapter-contracts.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/runtime/engines/economic.engine.js,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/runtime/engines/evolution.engine.js,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/runtime/engines/gpu.adapter.js,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/runtime/engines/graph.engine.js,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/runtime/engines/identity.engine.js,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/runtime/engines/pallium.engine.js,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/runtime/engines/room-system.adapter.js,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/runtime/engines/rtc.adapter.js,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/runtime/engines/state.engine.js,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/runtime/engines/trust.engine.js,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/runtime/engines/worker.adapter.js,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/runtime/rtc/leeway-rtc-native.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/runtime/rtc/store.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/vision/vision-adapter.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/vision/vision-awareness.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/vision/vision-budget.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/vision/vision-diagnostics.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/vision/vision-governance.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/vision/vision-monitor.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/vision/vision-storage.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/vision/VisualOverlayRenderer.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/voice/client_core/speech-recognition.d.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/voice/client_core/standaloneAgent.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/voice/client_core/VoiceSession.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/voice/client_core/wsAgent.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/voice/engine/audio.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/voice/engine/use-voice-engine.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/voice/engine/voice-loop.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/voice/engine/voice-output.ts,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/src/voice/engine/VoiceStudio.tsx,orphan,External,QUARANTINE,,low,orphaned file,false,false
+LeeWay-Standards,LeeWay-Standards/standards/cli/run-agents.mjs,orphan,External,QUARANTINE,,low,orphaned file,false,false

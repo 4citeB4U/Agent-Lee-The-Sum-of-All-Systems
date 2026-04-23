@@ -1,0 +1,245 @@
+/*
+LEEWAY HEADER — DO NOT REMOVE
+REGION: CLIENT.STYLES.GLOBAL
+TAG: UI.CSS.GLOBAL.ROOT
+COLOR_ONION_HEX: NEON=#00FFD1 FLUO=#00B4FF PASTEL=#C7F0FF
+ICON_ASCII: family=lucide glyph=palette
+5WH:
+  WHAT = Global CSS entry — Tailwind v4, fonts, animations
+  WHY  = Provides the base design system for LeeWay Edge RTC
+  WHO  = LeeWay Industries | LeeWay Innovation | Creator: Leonard Lee
+  WHERE = src/index.css
+  WHEN = 2026
+  HOW  = @tailwindcss/vite processes this file; all fonts are self-hosted via fontsource
+AGENTS: ASSESS ALIGN AUDIT
+LICENSE: PROPRIETARY
+*/
+/* Self-hosted fonts — no external CDN, no outside vendor */
+@import "@fontsource/inter/400.css";
+@import "@fontsource/inter/500.css";
+@import "@fontsource/inter/600.css";
+@import "@fontsource/inter/700.css";
+@import "@fontsource/jetbrains-mono/400.css";
+@import "@fontsource/jetbrains-mono/500.css";
+@import "@fontsource/jetbrains-mono/700.css";
+@import "@fontsource-variable/geist";
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+}
+
+@theme inline {
+  --font-heading: var(--font-sans);
+  --font-sans: 'Geist Variable', sans-serif;
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-foreground: var(--foreground);
+  --color-background: var(--background);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+:root {
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+  --chart-1: oklch(0.87 0 0);
+  --chart-2: oklch(0.556 0 0);
+  --chart-3: oklch(0.439 0 0);
+  --chart-4: oklch(0.371 0 0);
+  --chart-5: oklch(0.269 0 0);
+  --radius: 0.625rem;
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
+}
+
+.dark {
+  --background: oklch(0 0 0);
+  --foreground: oklch(0.98 0.02 240);
+  --card: oklch(0.12 0.03 240 / 70%);
+  --card-foreground: oklch(0.98 0.02 240);
+  --popover: oklch(0.12 0.03 240);
+  --popover-foreground: oklch(0.98 0.02 240);
+  
+  --primary: oklch(0.45 0.25 260);    /* Royal Blue */
+  --primary-foreground: oklch(0.98 0.01 260);
+  --secondary: oklch(0.85 0.15 220);  /* Baby Blue */
+  --secondary-foreground: oklch(0.15 0.05 220);
+  
+  --muted: oklch(0.15 0.02 240);
+  --muted-foreground: oklch(0.65 0.02 240);
+  
+  --accent: oklch(0.85 0.25 85);     /* Cardinal Yellow */
+  --accent-foreground: oklch(0.15 0.05 85);
+  
+  --destructive: oklch(0.55 0.25 25); /* Cardinal Red */
+  
+  --border: oklch(1 0 0 / 12%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.45 0.25 260);
+  
+  --chart-1: oklch(0.45 0.25 260);    /* Royal blue */
+  --chart-2: oklch(0.85 0.25 85);     /* Cardinal yellow */
+  --chart-3: oklch(0.55 0.25 25);     /* Cardinal red */
+  --chart-4: oklch(0.85 0.15 220);    /* Baby blue */
+  --chart-5: oklch(0.7 0.02 240);
+  
+  --sidebar: oklch(0.1 0.03 240);
+  --sidebar-foreground: oklch(0.98 0.02 240);
+  --sidebar-primary: oklch(0.45 0.25 260);
+  --sidebar-primary-foreground: oklch(0.98 0.01 260);
+  --sidebar-accent: oklch(0.85 0.25 85 / 10%);
+  --sidebar-accent-foreground: oklch(0.85 0.25 85);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.45 0.25 260);
+}
+
+@layer utilities {
+  .text-royal { color: oklch(0.45 0.25 260); }
+  .text-baby { color: oklch(0.85 0.15 220); }
+  .text-cardinal-yellow { color: oklch(0.85 0.25 85); }
+  .text-cardinal-red { color: oklch(0.55 0.25 25); }
+  
+  .bg-royal { background-color: oklch(0.45 0.25 260); }
+  .bg-cardinal-yellow { background-color: oklch(0.85 0.25 85); }
+  .bg-cardinal-red { background-color: oklch(0.55 0.25 25); }
+  
+  .glow-royal { filter: drop-shadow(0 0 15px oklch(0.45 0.25 260 / 0.5)); }
+  .glow-baby { filter: drop-shadow(0 0 15px oklch(0.85 0.15 220 / 0.5)); }
+
+  /* Brand Title Outline (Orange/Yellow) */
+  .text-outline-cardinal {
+    -webkit-text-stroke: 1.5px oklch(0.85 0.25 85);
+    paint-order: stroke fill;
+  }
+
+  /* Cosmic Galaxy Engine (High-Fidelity) */
+  .bg-galaxy-infinite {
+    background: radial-gradient(circle at center, #050b1a 0%, #000 100%);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cosmic-nebula-blue {
+    background: radial-gradient(circle at 30% 40%, oklch(0.45 0.25 260 / 0.2) 0%, transparent 60%);
+    filter: blur(120px);
+  }
+
+  .cosmic-nebula-gold {
+    background: radial-gradient(circle at 70% 60%, oklch(0.85 0.25 85 / 0.12) 0%, transparent 60%);
+    filter: blur(120px);
+  }
+
+  .cosmic-energy-core {
+    background: radial-gradient(circle at 50% 50%, oklch(0.85 0.25 85 / 0.08) 0%, transparent 40%);
+    filter: blur(80px);
+    animation: core-pulse 10s ease-in-out infinite;
+  }
+
+  .starfield-fine {
+    background-image: 
+      radial-gradient(1px 1px at 30px 40px, #fff, rgba(0,0,0,0)),
+      radial-gradient(1.5px 1.5px at 150px 80px, oklch(0.85 0.25 85), rgba(0,0,0,0)),
+      radial-gradient(1px 1px at 200px 300px, #fff, rgba(0,0,0,0));
+    background-size: 300px 300px;
+    animation: cosmic-drift 180s linear infinite;
+    opacity: 0.5;
+  }
+
+  .starfield-seeds {
+    background-image: 
+      radial-gradient(3px 3px at 45% 55%, oklch(0.45 0.25 260 / 0.4), rgba(0,0,0,0)),
+      radial-gradient(4px 4px at 55% 45%, oklch(0.85 0.25 85 / 0.35), rgba(0,0,0,0));
+    background-size: 600px 600px;
+    animation: cosmic-drift 90s linear reverse infinite;
+    opacity: 0.6;
+    filter: blur(1px);
+  }
+
+  @keyframes core-pulse {
+    0%, 100% { opacity: 0.4; transform: scale(1); }
+    50% { opacity: 0.8; transform: scale(1.2); }
+  }
+
+  @keyframes cosmic-drift {
+    from { transform: translate(0, 0) rotate(0deg); }
+    to { transform: translate(-100px, -50px) rotate(2deg); }
+  }
+
+  .bg-grid-pattern {
+    background-image: linear-gradient(to right, rgba(99, 102, 241, 0.05) 1px, transparent 1px),
+                      linear-gradient(to bottom, rgba(99, 102, 241, 0.05) 1px, transparent 1px);
+    background-size: 60px 60px;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  html {
+    @apply font-sans;
+  }
+}

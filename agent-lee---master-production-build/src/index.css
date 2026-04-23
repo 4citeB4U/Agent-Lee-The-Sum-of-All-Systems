@@ -1,0 +1,345 @@
+@import "tailwindcss";
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #000;
+  color: #fff;
+  overflow: hidden;
+  font-family: "Space Grotesk", "Segoe UI", sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.gateway-screen,
+.theater-stage,
+.admissions-screen,
+.motherboard-shell {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+}
+
+.gateway-background {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 20% 20%, rgba(0, 242, 255, 0.22), transparent 35%),
+    radial-gradient(circle at 80% 10%, rgba(255, 136, 0, 0.18), transparent 32%),
+    radial-gradient(circle at 50% 70%, rgba(32, 255, 146, 0.14), transparent 40%),
+    #05070e;
+}
+
+.gateway-panel {
+  position: absolute;
+  z-index: 4;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(92vw, 860px);
+  padding: 24px;
+  border: 1px solid rgba(128, 245, 255, 0.28);
+  border-radius: 18px;
+  backdrop-filter: blur(14px);
+  background: rgba(7, 10, 20, 0.8);
+}
+
+.gateway-eyebrow {
+  margin: 0;
+  color: #83f7ff;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 12px;
+}
+
+.gateway-panel h1,
+.theater-overlay h1,
+.admissions-screen h1 {
+  margin: 8px 0 4px;
+  font-size: clamp(24px, 4vw, 40px);
+}
+
+.gateway-subtitle,
+.theater-overlay p {
+  margin: 6px 0 16px;
+  color: rgba(232, 241, 255, 0.85);
+}
+
+.gateway-form {
+  display: grid;
+  gap: 12px;
+}
+
+.gateway-form label,
+.gateway-form fieldset {
+  display: grid;
+  gap: 6px;
+  border: 0;
+  margin: 0;
+  padding: 0;
+  color: #d9e8ff;
+}
+
+.gateway-form input {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  color: #fff;
+  padding: 10px 12px;
+}
+
+.permission-row {
+  display: flex !important;
+  align-items: center;
+  gap: 8px;
+  color: #e3ebff;
+}
+
+.permission-row input {
+  width: auto;
+}
+
+.gateway-footer,
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+button {
+  border: 0;
+  border-radius: 10px;
+  padding: 10px 14px;
+  color: #fff;
+  cursor: pointer;
+  background: linear-gradient(100deg, #00d7ff, #0078ff);
+}
+
+button.secondary {
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+button.danger {
+  background: linear-gradient(100deg, #ff5f4d, #d32f2f);
+}
+
+.form-error {
+  margin: 0;
+  color: #ff9d9d;
+}
+
+.theater-stage {
+  overflow: hidden;
+  background: #000;
+}
+
+.galaxy-loader {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: radial-gradient(circle at center, rgba(4, 20, 40, 0.92), #020204 65%);
+}
+
+.galaxy-core {
+  position: absolute;
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  filter: blur(1px);
+  background: radial-gradient(circle, rgba(180, 247, 255, 0.95) 0%, rgba(62, 137, 255, 0.35) 35%, rgba(0, 0, 0, 0) 70%);
+  animation: pulse-core 2.2s ease-in-out infinite;
+}
+
+.galaxy-arm {
+  position: absolute;
+  width: min(80vw, 980px);
+  height: min(80vw, 980px);
+  border-radius: 50%;
+  border: 2px solid rgba(123, 215, 255, 0.14);
+  box-shadow: 0 0 35px rgba(64, 182, 255, 0.25) inset;
+}
+
+.galaxy-arm-a { animation: spin-arm 4s linear infinite; }
+.galaxy-arm-b { animation: spin-arm 6s linear reverse infinite; transform: scale(0.75); }
+.galaxy-arm-c { animation: spin-arm 8s linear infinite; transform: scale(0.5); }
+
+.star-field {
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(1px 1px at 20% 22%, #fff, transparent),
+    radial-gradient(1px 1px at 70% 30%, #9ee5ff, transparent),
+    radial-gradient(1px 1px at 52% 65%, #fff, transparent),
+    radial-gradient(1px 1px at 84% 80%, #b1d4ff, transparent);
+  animation: star-fade 2.8s ease-in-out infinite alternate;
+}
+
+.theater-overlay {
+  position: absolute;
+  inset: auto 0 10%;
+  text-align: center;
+  z-index: 3;
+  padding: 0 20px;
+}
+
+.progress-shell {
+  width: min(90vw, 620px);
+  height: 12px;
+  margin: 0 auto;
+  border-radius: 999px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #5ef7ff, #1f8aff);
+  transition: width 120ms linear;
+}
+
+.progress-label {
+  margin-top: 8px;
+  color: #9cc9ff;
+}
+
+.motherboard-topbar {
+  position: absolute;
+  z-index: 5;
+  top: 14px;
+  left: 14px;
+  right: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: rgba(3, 6, 12, 0.62);
+  border: 1px solid rgba(130, 215, 255, 0.25);
+  backdrop-filter: blur(10px);
+}
+
+.motherboard-topbar h2 {
+  margin: 0;
+  font-size: clamp(16px, 2.4vw, 24px);
+}
+
+.topbar-kicker,
+.onboarding-step {
+  margin: 0;
+  color: #98e9ff;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 11px;
+}
+
+.onboarding-mask {
+  position: absolute;
+  z-index: 6;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgba(0, 0, 0, 0.55);
+  padding: 16px;
+}
+
+.onboarding-card {
+  width: min(92vw, 680px);
+  border-radius: 14px;
+  padding: 20px;
+  border: 1px solid rgba(146, 232, 255, 0.34);
+  background: rgba(10, 13, 24, 0.92);
+}
+
+.onboarding-card h3 {
+  margin: 8px 0;
+  font-size: clamp(20px, 3vw, 32px);
+}
+
+.onboarding-card p {
+  margin: 0 0 14px;
+  color: rgba(223, 233, 250, 0.9);
+  line-height: 1.45;
+}
+
+.admissions-screen {
+  overflow: auto;
+  background: radial-gradient(circle at 20% -10%, rgba(0, 184, 255, 0.24), transparent 35%), #060a12;
+  padding: 20px;
+}
+
+.admissions-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+
+.admissions-card {
+  border: 1px solid rgba(143, 227, 255, 0.22);
+  border-radius: 14px;
+  padding: 16px;
+  display: grid;
+  gap: 10px;
+  background: rgba(7, 11, 20, 0.82);
+}
+
+.admissions-list {
+  display: grid;
+  gap: 10px;
+}
+
+.admissions-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  align-items: flex-start;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  padding: 10px;
+}
+
+.admissions-row p,
+.qr-code {
+  margin: 4px 0;
+  color: #a8b8d8;
+  font-size: 13px;
+  word-break: break-all;
+}
+
+@keyframes spin-arm {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes pulse-core {
+  0%, 100% { transform: scale(0.9); opacity: 0.75; }
+  50% { transform: scale(1.15); opacity: 1; }
+}
+
+@keyframes star-fade {
+  from { opacity: 0.45; }
+  to { opacity: 0.9; }
+}
+
+@media (max-width: 860px) {
+  body {
+    overflow: hidden;
+  }
+
+  .motherboard-topbar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .topbar-actions,
+  .gateway-footer {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+}

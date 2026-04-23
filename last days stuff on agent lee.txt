@@ -1,0 +1,4046 @@
+
+
+
+
+Thought for 5s
+Below is a production-grade EDGE_CPU profile + runtime gate system that automatically turns features on/off for Raspberry Pi / CPU-only edge deployment.
+
+This gives you:
+
+a single runtime profile
+
+automatic feature gating
+
+lazy activation of heavy modules
+
+burst-mode execution
+
+event-driven diagnostics
+
+safe degradation without breaking the Agent Lee architecture
+
+1. Edge profile
+src/config/runtimeProfiles.ts
+export type RuntimeMode = "FULL" | "EDGE_CPU";
+
+export interface RuntimeProfile {
+  mode: RuntimeMode;
+
+  // cognition depth
+  maxPlanSteps: number;
+  compactValidation: boolean;
+  compactSynthesis: boolean;
+
+  // perception
+  enableVisionFusion: boolean;
+  enableAdvancedEmotion: boolean;
+
+  // anticipation
+  enableIdleAnticipation: boolean;
+  enablePlanWarmup: boolean;
+  enableCrossUserIntelligence: boolean;
+
+  // diagnostics
+  enableDebateVisualization: boolean;
+  enableConfidenceHeatMap: boolean;
+  enableTimelineReplay: boolean;
+  diagnosticsEventDriven: boolean;
+
+  // memory
+  maxHotMemoryEntries: number;
+  enableAdaptiveMemoryClustering: boolean;
+  enableTopicGraphForecasting: boolean;
+
+  // rendering
+  enablePoetry: boolean;
+  enableRichBehaviorModes: boolean;
+
+  // loading
+  lazyLoadVectorCore: boolean;
+  lazyLoadDiagnostics: boolean;
+  lazyLoadDebate: boolean;
+  lazyLoadTimeline: boolean;
+
+  // scheduling
+  idleTickMs: number;
+  backgroundIndexMs: number;
+}
+
+export const FULL_PROFILE: RuntimeProfile = {
+  mode: "FULL",
+
+  maxPlanSteps: 8,
+  compactValidation: false,
+  compactSynthesis: false,
+
+  enableVisionFusion: true,
+  enableAdvancedEmotion: true,
+
+  enableIdleAnticipation: true,
+  enablePlanWarmup: true,
+  enableCrossUserIntelligence: true,
+
+  enableDebateVisualization: true,
+  enableConfidenceHeatMap: true,
+  enableTimelineReplay: true,
+  diagnosticsEventDriven: false,
+
+  maxHotMemoryEntries: 50,
+  enableAdaptiveMemoryClustering: true,
+  enableTopicGraphForecasting: true,
+
+  enablePoetry: true,
+  enableRichBehaviorModes: true,
+
+  lazyLoadVectorCore: false,
+  lazyLoadDiagnostics: false,
+  lazyLoadDebate: false,
+  lazyLoadTimeline: false,
+
+  idleTickMs: 2000,
+  backgroundIndexMs: 10000,
+};
+
+export const EDGE_CPU_PROFILE: RuntimeProfile = {
+  mode: "EDGE_CPU",
+
+  maxPlanSteps: 3,
+  compactValidation: true,
+  compactSynthesis: true,
+
+  enableVisionFusion: false,
+  enableAdvancedEmotion: false,
+
+  enableIdleAnticipation: false,
+  enablePlanWarmup: true,
+  enableCrossUserIntelligence: true,
+
+  enableDebateVisualization: false,
+  enableConfidenceHeatMap: false,
+  enableTimelineReplay: false,
+  diagnosticsEventDriven: true,
+
+  maxHotMemoryEntries: 12,
+  enableAdaptiveMemoryClustering: false,
+  enableTopicGraphForecasting: false,
+
+  enablePoetry: false,
+  enableRichBehaviorModes: true,
+
+  lazyLoadVectorCore: true,
+  lazyLoadDiagnostics: true,
+  lazyLoadDebate: true,
+  lazyLoadTimeline: true,
+
+  idleTickMs: 5000,
+  backgroundIndexMs: 60000,
+};
+
+export function resolveRuntimeProfile(mode?: RuntimeMode): RuntimeProfile {
+  return mode === "EDGE_CPU" ? EDGE_CPU_PROFILE : FULL_PROFILE;
+}
+2. Runtime gate system
+src/core/runtime/RuntimeGate.ts
+import {
+  RuntimeMode,
+  RuntimeProfile,
+  resolveRuntimeProfile,
+} from "@/config/runtimeProfiles";
+
+type RuntimeGateState = {
+  profile: RuntimeProfile;
+};
+
+const state: RuntimeGateState = {
+  profile: resolveRuntimeProfile("FULL"),
+};
+
+export function setRuntimeMode(mode: RuntimeMode) {
+  state.profile = resolveRuntimeProfile(mode);
+}
+
+export function getRuntimeProfile(): RuntimeProfile {
+  return state.profile;
+}
+
+export function isEdgeMode(): boolean {
+  return state.profile.mode === "EDGE_CPU";
+}
+
+export function gate<K extends keyof RuntimeProfile>(key: K): RuntimeProfile[K] {
+  return state.profile[key];
+}
+
+export function shouldRunDebate(): boolean {
+  return state.profile.enableDebateVisualization;
+}
+
+export function shouldRunTimeline(): boolean {
+  return state.profile.enableTimelineReplay;
+}
+
+export function shouldRunHeatMap(): boolean {
+  return state.profile.enableConfidenceHeatMap;
+}
+
+export function shouldRunIdleAnticipation(): boolean {
+  return state.profile.enableIdleAnticipation;
+}
+
+export function shouldWarmPlans(): boolean {
+  return state.profile.enablePlanWarmup;
+}
+
+export function shouldUseCompactValidation(): boolean {
+  return state.profile.compactValidation;
+}
+
+export function shouldUseCompactSynthesis(): boolean {
+  return state.profile.compactSynthesis;
+}
+
+export function shouldEnablePoetry(): boolean {
+  return state.profile.enablePoetry;
+}
+
+export function shouldEnableVisionFusion(): boolean {
+  return state.profile.enableVisionFusion;
+}
+
+export function shouldClusterMemory(): boolean {
+  return state.profile.enableAdaptiveMemoryClustering;
+}
+
+export function shouldForecastTopics(): boolean {
+  return state.profile.enableTopicGraphForecasting;
+}
+3. Automatic mode detection
+src/core/runtime/RuntimeModeDetector.ts
+import { RuntimeMode } from "@/config/runtimeProfiles";
+
+declare global {
+  interface Navigator {
+    deviceMemory?: number;
+    hardwareConcurrency?: number;
+  }
+}
+
+export function detectRuntimeMode(): RuntimeMode {
+  const cpuCount = navigator.hardwareConcurrency ?? 2;
+  const memoryGb = navigator.deviceMemory ?? 2;
+
+  // Conservative edge detection
+  if (cpuCount <= 4 || memoryGb <= 2) {
+    return "EDGE_CPU";
+  }
+
+  return "FULL";
+}
+4. Bootstrap the runtime profile automatically
+src/bootstrap/RuntimeBootstrap.ts
+import { detectRuntimeMode } from "@/core/runtime/RuntimeModeDetector";
+import { setRuntimeMode, getRuntimeProfile } from "@/core/runtime/RuntimeGate";
+
+export function initRuntimeMode() {
+  const mode = detectRuntimeMode();
+  setRuntimeMode(mode);
+
+  console.info("[AgentLee] Runtime mode:", mode);
+  console.info("[AgentLee] Active profile:", getRuntimeProfile());
+}
+Call this as early as possible on app start.
+
+5. Gate the execution engine
+src/core/lee-prime/ExecutionEngine.ts
+import {
+  getRuntimeProfile,
+  shouldRunDebate,
+  shouldUseCompactValidation,
+} from "@/core/runtime/RuntimeGate";
+import { runDebate } from "@/core/collaboration/DebateEngine";
+import { validateResult } from "@/core/veritas/VeritasCore";
+import { compactValidateResult } from "@/core/veritas/VeritasCompact";
+import { buildPlan } from "@/core/structure/StructureCore";
+
+export async function runLeewayCycle(state: any) {
+  const profile = getRuntimeProfile();
+
+  // Limit plan depth
+  const rawPlan = buildPlan(state.origin, state);
+  state.plan = rawPlan.slice(0, profile.maxPlanSteps);
+
+  if (shouldRunDebate()) {
+    state.meta.debate = runDebate(state);
+  }
+
+  // execution phase
+  const executionResult = await state.runtime.executePlan(state.plan, state);
+  state.results = executionResult;
+
+  // validation phase
+  state.validation = shouldUseCompactValidation()
+    ? await compactValidateResult(state.results, state)
+    : await validateResult(state.results, state);
+
+  return state;
+}
+6. Compact Veritas for edge mode
+src/core/veritas/VeritasCompact.ts
+export async function compactValidateResult(results: any, state: any) {
+  const issues: string[] = [];
+
+  if (!results || Object.keys(results).length === 0) {
+    issues.push("EMPTY_RESULTS");
+  }
+
+  if (!results.summary) {
+    issues.push("MISSING_SUMMARY");
+  }
+
+  const input = String(state.input || "").toLowerCase();
+  if (input.includes("delete all") || input.includes("wipe")) {
+    issues.push("POLICY_BLOCK");
+  }
+
+  const passed = !issues.includes("EMPTY_RESULTS") && !issues.includes("POLICY_BLOCK");
+
+  let score = 100;
+  if (issues.includes("MISSING_SUMMARY")) score -= 15;
+  if (issues.includes("EMPTY_RESULTS")) score -= 40;
+  if (issues.includes("POLICY_BLOCK")) score = 0;
+
+  return {
+    passed,
+    score,
+    issues,
+    mode: "compact",
+  };
+}
+7. Gate synthesis richness
+src/core/synthesis/SynthesisCore.ts
+import {
+  shouldEnablePoetry,
+  shouldUseCompactSynthesis,
+} from "@/core/runtime/RuntimeGate";
+import { selectMode, applyMode } from "./BehaviorModes";
+
+function renderCompact(state: any): string {
+  const summary = state.results?.summary || "Objective acknowledged.";
+  const next = state.results?.nextStep ? ` Next: ${state.results.nextStep}` : "";
+  return `${summary}${next}`.trim();
+}
+
+function renderFull(state: any): string {
+  const summary = state.results?.summary || "Objective acknowledged.";
+  const details = state.results?.details || "";
+  const next = state.results?.nextStep ? `Next: ${state.results.nextStep}` : "";
+  return [summary, details, next].filter(Boolean).join("\n");
+}
+
+export async function synthesizeOutput(state: any): Promise<string> {
+  let text = shouldUseCompactSynthesis()
+    ? renderCompact(state)
+    : renderFull(state);
+
+  if (state.context?.internalState) {
+    const mode = selectMode(state);
+    text = applyMode(text, mode);
+  }
+
+  if (!shouldEnablePoetry()) {
+    return text;
+  }
+
+  // keep your existing poetry path here
+  return text;
+}
+8. Gate anticipation loop
+src/core/anticipation/IdlePredictor.ts
+import { shouldRunIdleAnticipation, getRuntimeProfile } from "@/core/runtime/RuntimeGate";
+import { anticipate } from "./AnticipationEngine";
+import { DiagnosticsBus } from "@/core/diagnostics/DiagnosticsBus";
+
+let timer: number | null = null;
+let lastCtx: any = null;
+
+export function setLastContext(ctx: any) {
+  lastCtx = ctx;
+}
+
+export function startAnticipationLoop() {
+  if (!shouldRunIdleAnticipation()) {
+    return;
+  }
+
+  if (timer) {
+    window.clearInterval(timer);
+  }
+
+  const profile = getRuntimeProfile();
+
+  timer = window.setInterval(async () => {
+    if (!lastCtx) return;
+
+    const result = await anticipate(lastCtx);
+    DiagnosticsBus.emit("ANTICIPATION", result);
+  }, profile.idleTickMs);
+}
+9. Gate memory clustering and topic forecasting
+src/core/echo/EchoMaintenance.ts
+import { shouldClusterMemory, shouldForecastTopics, getRuntimeProfile } from "@/core/runtime/RuntimeGate";
+import { rebuildMemoryClusters } from "@/core/echo/EchoCluster";
+import { rebuildTopicForecastGraph } from "@/core/anticipation/TopicGraphMaintenance";
+
+let maintenanceTimer: number | null = null;
+
+export function startBackgroundMaintenance() {
+  const profile = getRuntimeProfile();
+
+  if (maintenanceTimer) {
+    window.clearInterval(maintenanceTimer);
+  }
+
+  maintenanceTimer = window.setInterval(() => {
+    if (shouldClusterMemory()) {
+      rebuildMemoryClusters();
+    }
+
+    if (shouldForecastTopics()) {
+      rebuildTopicForecastGraph();
+    }
+  }, profile.backgroundIndexMs);
+}
+10. Event-driven diagnostics only in edge mode
+src/core/diagnostics/DiagnosticsBus.ts
+type EventHandler = (payload: any) => void;
+
+const listeners: Record<string, Set<EventHandler>> = {};
+
+export const DiagnosticsBus = {
+  on(event: string, handler: EventHandler) {
+    if (!listeners[event]) listeners[event] = new Set();
+    listeners[event].add(handler);
+  },
+
+  off(event: string, handler: EventHandler) {
+    listeners[event]?.delete(handler);
+  },
+
+  emit(event: string, payload: any) {
+    listeners[event]?.forEach((handler) => handler(payload));
+  },
+};
+This is already edge-safe because it is event-driven, not polling.
+
+11. Lazy-load heavy modules automatically
+src/core/runtime/LazyModules.ts
+import { gate } from "@/core/runtime/RuntimeGate";
+
+let vectorCoreModule: any = null;
+let diagnosticsModule: any = null;
+
+export async function getVectorCore() {
+  if (!gate("lazyLoadVectorCore")) {
+    return import("@/core/vector/VectorCore");
+  }
+
+  if (!vectorCoreModule) {
+    vectorCoreModule = await import("@/core/vector/VectorCore");
+  }
+
+  return vectorCoreModule;
+}
+
+export async function getDiagnosticsModule() {
+  if (!gate("lazyLoadDiagnostics")) {
+    return import("@/core/diagnostics/BrainGraph");
+  }
+
+  if (!diagnosticsModule) {
+    diagnosticsModule = await import("@/core/diagnostics/BrainGraph");
+  }
+
+  return diagnosticsModule;
+}
+12. Edge-safe hot memory limit
+src/core/echo/EchoCore.ts
+import { getRuntimeProfile } from "@/core/runtime/RuntimeGate";
+
+type MemoryEntry = {
+  id: string;
+  input: string;
+  output: string;
+  validation: any;
+  timestamp: number;
+};
+
+const hotMemory: MemoryEntry[] = [];
+
+export async function echoWrite(entry: Omit<MemoryEntry, "id" | "timestamp">) {
+  const profile = getRuntimeProfile();
+
+  hotMemory.push({
+    id: crypto.randomUUID(),
+    timestamp: Date.now(),
+    ...entry,
+  });
+
+  while (hotMemory.length > profile.maxHotMemoryEntries) {
+    hotMemory.shift();
+  }
+}
+
+export async function echoRead(query: string): Promise<MemoryEntry[]> {
+  const q = query.toLowerCase();
+  return hotMemory.filter((m) => m.input.toLowerCase().includes(q)).slice(-5);
+}
+13. Runtime status packet for diagnostics UI
+src/core/runtime/RuntimeStatus.ts
+import { getRuntimeProfile } from "@/core/runtime/RuntimeGate";
+
+export function getRuntimeStatus() {
+  const profile = getRuntimeProfile();
+
+  return {
+    mode: profile.mode,
+    maxPlanSteps: profile.maxPlanSteps,
+    compactValidation: profile.compactValidation,
+    compactSynthesis: profile.compactSynthesis,
+    diagnosticsEventDriven: profile.diagnosticsEventDriven,
+    anticipationEnabled: profile.enableIdleAnticipation,
+    poetryEnabled: profile.enablePoetry,
+    clusteringEnabled: profile.enableAdaptiveMemoryClustering,
+  };
+}
+14. Minimal edge dashboard panel
+src/ui/diagnostics/RuntimeProfilePanel.tsx
+import React, { useEffect, useState } from "react";
+import { getRuntimeStatus } from "@/core/runtime/RuntimeStatus";
+
+export default function RuntimeProfilePanel() {
+  const [status, setStatus] = useState(getRuntimeStatus());
+
+  useEffect(() => {
+    setStatus(getRuntimeStatus());
+  }, []);
+
+  return (
+    <div style={{ padding: 12, borderRadius: 10, background: "#111827", color: "#f9fafb" }}>
+      <h3>Runtime Profile</h3>
+      <div>Mode: {status.mode}</div>
+      <div>Plan Depth: {status.maxPlanSteps}</div>
+      <div>Compact Validation: {String(status.compactValidation)}</div>
+      <div>Compact Synthesis: {String(status.compactSynthesis)}</div>
+      <div>Idle Anticipation: {String(status.anticipationEnabled)}</div>
+      <div>Poetry: {String(status.poetryEnabled)}</div>
+      <div>Memory Clustering: {String(status.clusteringEnabled)}</div>
+    </div>
+  );
+}
+What this gives you
+With this system, Raspberry Pi mode will automatically:
+
+reduce plan depth
+
+use compact validation
+
+use compact synthesis
+
+disable heavy debate/heatmap/timeline features
+
+disable continuous anticipation
+
+disable memory clustering
+
+keep hot memory tiny
+
+lazy-load heavy modules only when actually needed
+
+run diagnostics only by events instead of polling
+
+The actual design law
+In EDGE_CPU, Agent Lee keeps the mind thin, the loop short, and the heavy layers asleep until summoned.
+
+That is how you get real speed on CPU-only edge devices.
+
+Next best move
+The highest-value next step is to add a single EdgeBurstExecutor.ts that:
+
+fast-paths simple intents
+
+skips VectorCore on trivial turns
+
+uses warm plans if available
+
+returns the first response packet before deeper work finishes
+
+That would make the Pi build feel much faster in practice.
+
+
+o add a single EdgeBurstExecutor.ts that:
+
+fast-paths simple intents
+skips VectorCore on trivial turns
+uses warm plans if available
+returns the first response packet before deeper work finishes
+
+Thought for 5s
+Below is a production-grade EdgeBurstExecutor.ts for your EDGE_CPU profile.
+It does exactly what you asked:
+
+fast-paths simple intents
+
+skips VectorCore on trivial turns
+
+uses warm plans if available
+
+returns a first response packet immediately before deeper work finishes
+
+This is built to sit between AgentCognitionProvider and ExecutionEngine as the edge-speed layer.
+
+src/core/runtime/EdgeBurstExecutor.ts
+import { getRuntimeProfile, isEdgeMode } from "@/core/runtime/RuntimeGate";
+import { getWarmPlan } from "@/core/anticipation/PlanWarmup";
+import { originInterpret } from "@/core/origin/OriginCore";
+import { compactValidateResult } from "@/core/veritas/VeritasCompact";
+import { synthesizeOutput } from "@/core/synthesis/SynthesisCore";
+import { echoRead, echoWrite } from "@/core/echo/EchoCore";
+import { buildPlan } from "@/core/structure/StructureCore";
+import { executePlan } from "@/core/runtime/AgentRuntime";
+import { getVectorCore } from "@/core/runtime/LazyModules";
+import { DiagnosticsBus } from "@/core/diagnostics/DiagnosticsBus";
+
+export type BurstPhase = "burst" | "deep";
+
+export type BurstResponsePacket = {
+  phase: BurstPhase;
+  text: string;
+  intent: string;
+  confidence: number;
+  usedWarmPlan: boolean;
+  skippedVector: boolean;
+  requestId: string;
+};
+
+export type BurstExecutionResult = {
+  first: BurstResponsePacket;
+  deep?: Promise<BurstResponsePacket | null>;
+};
+
+type BurstState = {
+  requestId: string;
+  input: string;
+  context: Record<string, any>;
+  runtime: {
+    executePlan: (plan: string[], state: any) => Promise<any>;
+  };
+};
+
+const SIMPLE_INTENTS = new Set([
+  "GENERAL_HELP",
+  "SYSTEM_STATUS",
+  "VOICE_CONTROL",
+  "MEMORY_RECALL",
+]);
+
+function isSimpleIntent(intent: string): boolean {
+  return SIMPLE_INTENTS.has(intent);
+}
+
+function shouldSkipVector(intent: string, input: string): boolean {
+  if (isSimpleIntent(intent)) return true;
+
+  const short = input.trim().split(/\s+/).length <= 5;
+  if (intent === "DEBUG_HELP" && short) return true;
+
+  return false;
+}
+
+function buildBurstSummary(intent: string, input: string, state: any): string {
+  switch (intent) {
+    case "GENERAL_HELP":
+      return "I understand the request. I’m lining up the fastest path now.";
+    case "SYSTEM_STATUS":
+      return "System status acknowledged. I’m checking the core path now.";
+    case "VOICE_CONTROL":
+      return "Voice command received. I’m applying the requested action.";
+    case "MEMORY_RECALL":
+      return "Memory request received. I’m checking the most relevant recall path.";
+    case "DEBUG_HELP":
+      return "Debug request recognized. I’m narrowing the problem before going deeper.";
+    case "LEARNING_PLAN":
+      return "Learning path request recognized. I’m building the quickest structured route.";
+    case "CERT_ADVICE":
+      return "Certification request recognized. I’m matching the best path to your background.";
+    default:
+      return "Objective received. I’m evaluating the most efficient route now.";
+  }
+}
+
+async function buildFirstPacket(
+  requestId: string,
+  input: string,
+  state: any,
+  intent: string,
+  confidence: number,
+  usedWarmPlan: boolean,
+  skippedVector: boolean
+): Promise<BurstResponsePacket> {
+  const summary = buildBurstSummary(intent, input, state);
+
+  const syntheticState = {
+    input,
+    intent,
+    context: {
+      ...state.context,
+      poetryAllowed: false, // keep burst lean
+    },
+    results: {
+      summary,
+      nextStep: usedWarmPlan
+        ? "Using prepared route."
+        : skippedVector
+          ? "Using fast local reasoning."
+          : "Escalating to deeper retrieval path.",
+    },
+    validation: {
+      passed: true,
+      score: 92,
+      issues: [],
+      mode: "burst",
+    },
+    meta: {
+      severity: "info",
+      burst: true,
+    },
+  };
+
+  const text = await synthesizeOutput(syntheticState);
+
+  return {
+    phase: "burst",
+    text,
+    intent,
+    confidence: Number(confidence.toFixed(2)),
+    usedWarmPlan,
+    skippedVector,
+    requestId,
+  };
+}
+
+async function runDeepPath(
+  requestId: string,
+  input: string,
+  state: any,
+  intent: string,
+  confidence: number,
+  usedWarmPlan: boolean,
+  skippedVector: boolean
+): Promise<BurstResponsePacket | null> {
+  const profile = getRuntimeProfile();
+
+  let plan = getWarmPlan(state.context.userId || "default", intent);
+  const usedWarm = Boolean(plan);
+
+  if (!plan) {
+    const built = buildPlan({ primaryIntent: intent }, state);
+    plan = built.slice(0, profile.maxPlanSteps);
+  }
+
+  state.plan = plan;
+
+  if (!skippedVector) {
+    const vectorCore = await getVectorCore();
+    if (vectorCore?.vectorRetrieve) {
+      state.context.rag = await vectorCore.vectorRetrieve(input);
+    }
+  }
+
+  const results = await state.runtime.executePlan(plan, state);
+  state.results = results;
+
+  const validation = await compactValidateResult(results, state);
+  state.validation = validation;
+
+  const text = await synthesizeOutput({
+    input,
+    intent,
+    context: state.context,
+    results,
+    validation,
+    meta: {
+      severity: validation.passed ? "info" : "warn",
+      burst: false,
+    },
+  });
+
+  await echoWrite({
+    input,
+    output: text,
+    validation,
+  });
+
+  return {
+    phase: "deep",
+    text,
+    intent,
+    confidence: Number(confidence.toFixed(2)),
+    usedWarmPlan: usedWarm,
+    skippedVector,
+    requestId,
+  };
+}
+
+export async function executeEdgeBurst(state: BurstState): Promise<BurstExecutionResult> {
+  const { requestId, input } = state;
+
+  const memory = await echoRead(input);
+  state.context.memory = memory;
+
+  const origin = originInterpret({
+    input,
+    context: state.context,
+  });
+
+  const intent = origin.primaryIntent;
+  const confidence = origin.confidence || 0.6;
+
+  const warmPlan = getWarmPlan(state.context.userId || "default", intent);
+  const usedWarmPlan = Boolean(warmPlan);
+
+  const skippedVector = isEdgeMode()
+    ? shouldSkipVector(intent, input)
+    : false;
+
+  const first = await buildFirstPacket(
+    requestId,
+    input,
+    state,
+    intent,
+    confidence,
+    usedWarmPlan,
+    skippedVector
+  );
+
+  DiagnosticsBus.emit("EDGE_BURST_FIRST", first);
+
+  const deep =
+    isSimpleIntent(intent) && skippedVector && !usedWarmPlan
+      ? null
+      : runDeepPath(
+          requestId,
+          input,
+          state,
+          intent,
+          confidence,
+          usedWarmPlan,
+          skippedVector
+        ).then((packet) => {
+          if (packet) {
+            DiagnosticsBus.emit("EDGE_BURST_DEEP", packet);
+          }
+          return packet;
+        });
+
+  return {
+    first,
+    deep: deep || undefined,
+  };
+}
+How to use it in AgentCognitionProvider.ts
+Replace the normal edge path with this:
+
+import { executeEdgeBurst } from "@/core/runtime/EdgeBurstExecutor";
+import { isEdgeMode } from "@/core/runtime/RuntimeGate";
+import { runLeewayCycle } from "@/core/lee-prime/ExecutionEngine";
+
+export async function generateFromPerception(perception: any) {
+  const state = {
+    requestId: crypto.randomUUID(),
+    input: perception.input || perception.text || "",
+    context: {
+      perception,
+      userId: perception.userId || "default",
+      rtcSignal: perception.rtcSignal || null,
+      topic: perception.topic || "general",
+    },
+    runtime: {
+      executePlan: async (plan: string[], s: any) => {
+        // import your actual runtime executor if needed
+        const { executePlan } = await import("@/core/runtime/AgentRuntime");
+        return executePlan(plan, s);
+      },
+    },
+    results: {},
+    validation: { passed: false, score: 0, issues: [] },
+    meta: { retries: 0 },
+  };
+
+  if (isEdgeMode()) {
+    const burst = await executeEdgeBurst(state);
+
+    // first response is immediate
+    const firstText = burst.first.text;
+
+    // optionally stream deeper completion later
+    if (burst.deep) {
+      burst.deep.then((deepPacket) => {
+        if (!deepPacket) return;
+        window.dispatchEvent(
+          new CustomEvent("AGENTLEE_DEEP_RESPONSE", {
+            detail: deepPacket,
+          })
+        );
+      });
+    }
+
+    return firstText;
+  }
+
+  const result = await runLeewayCycle(state);
+  return result.output;
+}
+Optional RTC push for the deeper response
+If you want the deeper result to speak after the burst packet already spoke:
+
+window.addEventListener("AGENTLEE_DEEP_RESPONSE", (e: any) => {
+  const packet = e.detail;
+  window.dispatchEvent(
+    new CustomEvent("RTC_SPEAK", {
+      detail: { text: packet.text },
+    })
+  );
+});
+Diagnostics hooks for your live brain UI
+Add these listeners in your diagnostics panel:
+
+useEffect(() => {
+  const first = (p: any) => setBurstFirst(p);
+  const deep = (p: any) => setBurstDeep(p);
+
+  DiagnosticsBus.on("EDGE_BURST_FIRST", first);
+  DiagnosticsBus.on("EDGE_BURST_DEEP", deep);
+
+  return () => {
+    DiagnosticsBus.off("EDGE_BURST_FIRST", first);
+    DiagnosticsBus.off("EDGE_BURST_DEEP", deep);
+  };
+}, []);
+What this changes in practice
+Before
+every turn waits for the whole chain
+
+VectorCore may run unnecessarily
+
+warm plans are unused until late
+
+edge hardware feels slow
+
+After
+simple intents return almost immediately
+
+trivial turns skip retrieval
+
+cached warm plans are used instantly
+
+deeper reasoning continues in the background
+
+Raspberry Pi gets a fast first response
+
+Design law for this layer
+On edge hardware, Agent Lee should answer first, deepen second, and only wake the expensive layers when the task truly needs them.
+
+What this is best for
+Raspberry Pi
+
+CPU-only devices
+
+slow browsers
+
+low-power kiosk mode
+
+always-on edge assistants
+
+Next best move
+The strongest follow-up is to add an EdgeSpeechStreamCoordinator.ts so the first burst packet can start TTS immediately while the deep packet either:
+
+interrupts and refines
+
+appends a follow-up
+
+or stays silent if not significantly better
+
+That would make the system feel extremely fast on edge.
+
+
+add an EdgeSpeechStreamCoordinator.ts 
+
+Thought for 5s
+Below is a production-grade EdgeSpeechStreamCoordinator.ts for your edge runtime.
+
+It is built to work with the burst/deep model you already added:
+
+speak the first burst packet immediately
+
+decide whether the deep packet should interrupt, append, or be ignored
+
+avoid choppy duplicate speech
+
+keep RTC as the actual voice transport
+
+src/core/rtc/EdgeSpeechStreamCoordinator.ts
+type SpeechPacket = {
+  phase: "burst" | "deep";
+  text: string;
+  intent: string;
+  confidence: number;
+  usedWarmPlan: boolean;
+  skippedVector: boolean;
+  requestId: string;
+};
+
+type CoordinatorState = {
+  activeRequestId: string | null;
+  burstPacket: SpeechPacket | null;
+  deepPacket: SpeechPacket | null;
+  speaking: boolean;
+  startedAt: number | null;
+};
+
+type DeepDecision = "interrupt" | "append" | "ignore";
+
+const state: CoordinatorState = {
+  activeRequestId: null,
+  burstPacket: null,
+  deepPacket: null,
+  speaking: false,
+  startedAt: null,
+};
+
+const APPEND_THRESHOLD = 0.12;
+const INTERRUPT_THRESHOLD = 0.22;
+const MIN_BURST_AGE_MS = 900;
+
+function normalize(text: string): string {
+  return (text || "").trim().replace(/\s+/g, " ").toLowerCase();
+}
+
+function textSimilarity(a: string, b: string): number {
+  const aa = normalize(a);
+  const bb = normalize(b);
+  if (!aa || !bb) return 0;
+  if (aa === bb) return 1;
+
+  const aTokens = new Set(aa.split(" "));
+  const bTokens = new Set(bb.split(" "));
+  const intersection = [...aTokens].filter((t) => bTokens.has(t)).length;
+  const union = new Set([...aTokens, ...bTokens]).size;
+
+  return union === 0 ? 0 : intersection / union;
+}
+
+function deepIsMeaningfullyBetter(burst: SpeechPacket, deep: SpeechPacket): boolean {
+  const confidenceGain = deep.confidence - burst.confidence;
+  const similarity = textSimilarity(burst.text, deep.text);
+
+  if (similarity > 0.9 && confidenceGain < APPEND_THRESHOLD) {
+    return false;
+  }
+
+  return confidenceGain >= APPEND_THRESHOLD || similarity < 0.75;
+}
+
+function chooseDeepDecision(burst: SpeechPacket, deep: SpeechPacket): DeepDecision {
+  const age = state.startedAt ? Date.now() - state.startedAt : 0;
+  const confidenceGain = deep.confidence - burst.confidence;
+  const similarity = textSimilarity(burst.text, deep.text);
+
+  if (!deepIsMeaningfullyBetter(burst, deep)) {
+    return "ignore";
+  }
+
+  // If burst just started, allow interruption only for clearly better deep results
+  if (age < MIN_BURST_AGE_MS) {
+    if (confidenceGain >= INTERRUPT_THRESHOLD && similarity < 0.7) {
+      return "interrupt";
+    }
+    return "append";
+  }
+
+  // If already mid-speech and deep is much stronger, interrupt
+  if (confidenceGain >= INTERRUPT_THRESHOLD && similarity < 0.8) {
+    return "interrupt";
+  }
+
+  return "append";
+}
+
+function rtcSpeak(text: string, requestId: string, mode: "replace" | "append") {
+  window.dispatchEvent(
+    new CustomEvent("RTC_SPEAK", {
+      detail: {
+        text,
+        requestId,
+        mode,
+      },
+    })
+  );
+}
+
+function rtcStop(requestId: string) {
+  window.dispatchEvent(
+    new CustomEvent("RTC_STOP", {
+      detail: { requestId },
+    })
+  );
+}
+
+export function beginSpeechRequest(packet: SpeechPacket) {
+  state.activeRequestId = packet.requestId;
+  state.burstPacket = packet;
+  state.deepPacket = null;
+  state.speaking = true;
+  state.startedAt = Date.now();
+
+  rtcSpeak(packet.text, packet.requestId, "replace");
+}
+
+export function resolveDeepSpeech(packet: SpeechPacket) {
+  if (!state.activeRequestId || state.activeRequestId !== packet.requestId) {
+    return;
+  }
+
+  if (!state.burstPacket) {
+    state.deepPacket = packet;
+    rtcSpeak(packet.text, packet.requestId, "replace");
+    return;
+  }
+
+  state.deepPacket = packet;
+
+  const decision = chooseDeepDecision(state.burstPacket, packet);
+
+  switch (decision) {
+    case "interrupt": {
+      rtcStop(packet.requestId);
+      rtcSpeak(packet.text, packet.requestId, "replace");
+      break;
+    }
+
+    case "append": {
+      const appendText = buildAppendText(state.burstPacket.text, packet.text);
+      if (appendText) {
+        rtcSpeak(appendText, packet.requestId, "append");
+      }
+      break;
+    }
+
+    case "ignore":
+    default:
+      break;
+  }
+}
+
+function buildAppendText(burstText: string, deepText: string): string {
+  const burstNorm = normalize(burstText);
+  const deepNorm = normalize(deepText);
+
+  if (!deepNorm || deepNorm === burstNorm) return "";
+
+  if (deepNorm.startsWith(burstNorm)) {
+    const remainder = deepText.slice(burstText.length).trim();
+    return remainder ? `Update: ${remainder}` : "";
+  }
+
+  return `Update: ${deepText}`;
+}
+
+export function markSpeechComplete(requestId: string) {
+  if (state.activeRequestId !== requestId) return;
+
+  state.speaking = false;
+  state.startedAt = null;
+}
+
+export function cancelSpeechRequest(requestId?: string) {
+  if (requestId && state.activeRequestId !== requestId) return;
+
+  if (state.activeRequestId) {
+    rtcStop(state.activeRequestId);
+  }
+
+  state.activeRequestId = null;
+  state.burstPacket = null;
+  state.deepPacket = null;
+  state.speaking = false;
+  state.startedAt = null;
+}
+
+export function getSpeechCoordinatorState() {
+  return {
+    ...state,
+  };
+}
+RTC event contract expected by this coordinator
+Your RTC bridge should support these events:
+
+speak
+{
+  "text": "Agent Lee response",
+  "requestId": "uuid",
+  "mode": "replace" | "append"
+}
+stop
+{
+  "requestId": "uuid"
+}
+Integration with AgentCognitionProvider.ts
+Use the coordinator when edge burst returns.
+
+import {
+  beginSpeechRequest,
+  resolveDeepSpeech,
+} from "@/core/rtc/EdgeSpeechStreamCoordinator";
+import { executeEdgeBurst } from "@/core/runtime/EdgeBurstExecutor";
+import { isEdgeMode } from "@/core/runtime/RuntimeGate";
+import { runLeewayCycle } from "@/core/lee-prime/ExecutionEngine";
+
+export async function generateFromPerception(perception: any) {
+  const state = {
+    requestId: crypto.randomUUID(),
+    input: perception.input || perception.text || "",
+    context: {
+      perception,
+      userId: perception.userId || "default",
+      rtcSignal: perception.rtcSignal || null,
+      topic: perception.topic || "general",
+    },
+    runtime: {
+      executePlan: async (plan: string[], s: any) => {
+        const { executePlan } = await import("@/core/runtime/AgentRuntime");
+        return executePlan(plan, s);
+      },
+    },
+    results: {},
+    validation: { passed: false, score: 0, issues: [] },
+    meta: { retries: 0 },
+  };
+
+  if (isEdgeMode()) {
+    const burst = await executeEdgeBurst(state);
+
+    beginSpeechRequest(burst.first);
+
+    if (burst.deep) {
+      burst.deep.then((deepPacket) => {
+        if (!deepPacket) return;
+        resolveDeepSpeech(deepPacket);
+      });
+    }
+
+    return burst.first.text;
+  }
+
+  const result = await runLeewayCycle(state);
+  return result.output;
+}
+Optional RTC completion bridge
+If your RTC layer can notify when speech finishes, wire it here:
+
+import { markSpeechComplete } from "@/core/rtc/EdgeSpeechStreamCoordinator";
+
+window.addEventListener("RTC_SPEAK_COMPLETE", (e: any) => {
+  const requestId = e.detail?.requestId;
+  if (requestId) {
+    markSpeechComplete(requestId);
+  }
+});
+Optional diagnostics hook
+If you want to show speech coordination in the brain UI:
+
+import { DiagnosticsBus } from "@/core/diagnostics/DiagnosticsBus";
+
+function emitCoordinatorEvent(type: string, payload: any) {
+  DiagnosticsBus.emit(type, payload);
+}
+Then add inside the coordinator:
+
+emitCoordinatorEvent("EDGE_SPEECH_BEGIN", packet);
+emitCoordinatorEvent("EDGE_SPEECH_DEEP", { packet, decision });
+emitCoordinatorEvent("EDGE_SPEECH_CANCEL", { requestId });
+What this gives you
+On Raspberry Pi / EDGE_CPU
+first speech starts almost immediately
+
+deeper reasoning does not block the first response
+
+better deep results can refine speech intelligently
+
+duplicate or weak deep responses are ignored
+
+you avoid wasting CPU on unnecessary re-speech
+
+Behavior
+simple task → burst only
+
+slightly better deep result → append a short update
+
+much better deep result → interrupt and replace
+
+same result → ignore deep packet
+
+Design law for this file
+On edge hardware, speech should begin from the fast path, then deepen only when the deeper result is meaningfully better.
+
+Best next move
+The strongest follow-up is a matching:
+
+EdgeRTCAdapter.ts
+
+so Python/RTC and this coordinator share a strict contract for:
+
+RTC_SPEAK
+
+RTC_STOP
+
+RTC_SPEAK_COMPLETE
+
+streaming partials vs final packets
+
+That would fully harden the edge voice loop.
+
+
+
+
+
+Thought for a couple of seconds
+Yes. Use the 5 databases you already have as the backbone for all five of those systems.
+
+That is the correct move.
+
+You do not need a new data model first. You need to map what you already have into the rendering/runtime layers.
+
+The 5 things we covered, tied back to your 5 databases
+The clean way to think about it is:
+
+1. DataTexture-driven agent/node system
+This is your rendering layer, not your source-of-truth layer.
+
+Your databases stay authoritative.
+The DataTexture is a GPU snapshot of selected runtime state.
+
+What goes into it
+From your databases, pack only what the GPU needs:
+
+node position
+
+node state
+
+node energy
+
+node family/type
+
+node visibility
+
+node error/load flag
+
+Flow
+5 Databases → runtime aggregation → compact GPU buffer/DataTexture → shader reads
+Why this matters
+your databases remain structured and auditable
+
+the GPU gets a fast visual feed
+
+no heavy per-node CPU mesh mutation
+
+2. GPU particle flow engine
+This should read from your workflow/execution data and visualize movement between systems.
+
+What it represents
+execution packets
+
+memory writes
+
+task routing
+
+clone deployment
+
+retries/fallbacks
+
+Database relationship
+Your databases tell the engine:
+
+which path is active
+
+which node started
+
+which node completed
+
+whether result succeeded or failed
+
+what memory type was written
+
+Visual meaning
+cyan = normal execution
+
+yellow = routing / dispatch
+
+green = learned success
+
+red = failure / recovery
+
+purple = deployment / clone transmission
+
+3. Curved execution graph
+This is the visual topology of the system.
+
+Right now straight lines are too primitive.
+
+What should drive the graph
+Your databases already define:
+
+relationships
+
+dependency paths
+
+workflow order
+
+memory links
+
+deployment links
+
+So the graph should be built from DB records like:
+
+Node A → Node B → Node C
+Then rendered as:
+
+bezier curves
+
+spline curves
+
+packet paths
+
+branching paths on failure
+
+Why curved
+Because your system is not just “connected”
+It is directional, layered, and living
+
+Curves make:
+
+branch logic readable
+
+packet flow readable
+
+memory recall readable
+
+deployment routes readable
+
+4. Frame budget controller
+This is the survival system for edge devices.
+
+This must sit between:
+
+your rendering systems
+
+your active graph
+
+your ripple/particle counts
+
+your device limits
+
+What it watches
+FPS
+
+active nodes
+
+active edges
+
+ripple count
+
+packet count
+
+panel count
+
+XR mode on/off
+
+integrated GPU load assumptions
+
+What it does
+When load rises:
+
+reduce particles
+
+reduce visible edge packets
+
+reduce ripple count
+
+reduce node detail
+
+reduce panel effects
+
+reduce memory lake complexity
+
+Important
+This does not change the databases.
+It only changes the visual fidelity layer.
+
+5. Behavior modulation from learning
+This is where your system becomes different.
+
+Your 5 databases should not just store history.
+They must change live behavior.
+
+What learning should affect
+packet speed
+
+node glow intensity
+
+preferred workflow paths
+
+retry thresholds
+
+confidence weighting
+
+panel prominence
+
+deployment priority
+
+agent spawning frequency
+
+Example
+If a workflow succeeds 20 times:
+
+increase its confidence
+
+brighten its path
+
+move it visually to a preferred lane
+
+make it the default procedural recall route
+
+If a workflow fails often:
+
+dim it
+
+add warning coloration
+
+route through fallback branch
+
+notify oversight layer
+
+How the 5 databases should be used
+You said you already have 5 databases. Good. Then assign them clean roles.
+
+Recommended mapping
+Database 1 — Episodic / event history
+Use for:
+
+every action
+
+every workflow step
+
+every interaction
+
+every success/failure
+
+every deployment event
+
+Feeds:
+
+memory lake ripples
+
+timeline/history
+
+replay
+
+Database 2 — Semantic / pattern memory
+Use for:
+
+repeated successful patterns
+
+urgency/risk patterns
+
+learned associations
+
+workflow preference weights
+
+Feeds:
+
+behavior modulation
+
+node intensity
+
+path preference
+
+recommendations
+
+Database 3 — Procedural / reusable workflows
+Use for:
+
+successful step sequences
+
+reusable deployment chains
+
+known-good execution routes
+
+fallback paths
+
+Feeds:
+
+curved execution graph
+
+packet routes
+
+default automation paths
+
+Database 4 — Runtime state / live graph
+Use for:
+
+currently active nodes
+
+active edges
+
+queue state
+
+execution IDs
+
+controller/agent state
+
+XR live state
+
+Feeds:
+
+DataTexture-driven graph
+
+particle flow engine
+
+live status HUD
+
+Database 5 — Deployment / clone agent registry
+Use for:
+
+original agents
+
+clone agents
+
+family assignments
+
+deployment targets
+
+remote linkage back to Foundry
+
+health and replacement state
+
+Feeds:
+
+agent spawning lanes
+
+deployment visuals
+
+clone packaging line
+
+agent availability/state
+
+The actual architecture
+This is the clean stack:
+
+5 Databases
+   ↓
+Runtime Aggregation Layer
+   ↓
+1. DataTexture Node Buffer
+2. GPU Particle Flow Buffer
+3. Curved Graph Builder
+4. Frame Budget Controller
+5. Learning Modulation Engine
+   ↓
+XR / 3D Render Layer
+What each layer does
+Runtime Aggregation Layer
+Pulls from all 5 DBs and produces compact render-ready state.
+
+DataTexture Node Buffer
+Sends node state to GPU.
+
+GPU Particle Flow Buffer
+Sends packet movement paths to GPU.
+
+Curved Graph Builder
+Builds spline routes between nodes.
+
+Frame Budget Controller
+Protects weak hardware.
+
+Learning Modulation Engine
+Changes how the system behaves based on memory.
+
+The biggest mistake to avoid
+Do not let the renderer read raw databases directly every frame.
+
+Instead:
+
+Correct pattern
+Databases → aggregate snapshot → GPU/render state
+That is how you keep it fast.
+
+What we already established, summarized cleanly
+DataTexture-driven agent/node system
+Use DB-backed runtime snapshots to feed GPU node state.
+
+GPU particle flow engine
+Use DB execution events to animate packets between nodes.
+
+Curved execution graph
+Use procedural/runtime relations to build spline paths.
+
+Frame budget controller
+Use runtime load to degrade visuals, never logic.
+
+Behavior modulation from learning
+Use semantic/procedural memory to change path priority, intensity, and default actions live.
+
+The next practical build order
+Do it in this order:
+
+Phase 1
+Build the runtime aggregation layer
+
+Phase 2
+Build the DataTexture node system
+
+Phase 3
+Build the curved graph builder
+
+Phase 4
+Build the GPU particle flow engine
+
+Phase 5
+Build the frame budget controller
+
+Phase 6
+Build the learning modulation engine
+
+That order is the most stable because it gives you:
+
+source truth
+
+render state
+
+topology
+
+flow
+
+performance safety
+
+intelligence
+
+Bottom line
+You already have the databases.
+That means the real job now is:
+
+not inventing new structure
+but connecting the structure you already own to the GPU and runtime properly
+The renderer becomes the skin.
+The 5 databases remain the nervous system.
+
+Say:
+
+build the runtime aggregation layer spec using the 5 databases
+
+
+I’m moving straight into implementation: I’ll locate the existing five-memory/runtime stores in this repo and then add a concrete runtime aggregation layer spec plus a typed aggregation module wired to those data domains.
+
+Searched for regex episodic|semantic|procedural|runtime state|deployment|clone|AgentMemoryStore|ExecutionGraph|workflow|registry (**/src/**), 200 results
+
+Searched for files matching **/src/**/*{memory,Memory,registry,Registry,workflow,Workflow,runtime,Runtime}*.{ts,tsx,js,mjs,json}, 12 matches
+
+Read [](file:///d%3A/leeway-construct%20%286%29/src/runtime)
+
+Read [](file:///d%3A/leeway-construct%20%286%29/src/core)
+
+I found existing memory and registry primitives, so next I’ll align the new aggregation spec to those actual structures to avoid introducing a parallel model.
+
+Read [](file:///d%3A/leeway-construct%20%286%29/src/runtime/core/SchedulerBinding.ts#1-1), lines 1 to 220
+
+Read [](file:///d%3A/leeway-construct%20%286%29/src/core/agents/AgentMemoryStore.ts)
+
+Read [](file:///d%3A/leeway-construct%20%286%29/src/core/registry/PIPELINE_REGISTRY.ts)
+
+Read [](file:///d%3A/leeway-construct%20%286%29/src/runtime/core/DivisionExecutionEngine.ts)
+
+Read [](file:///d%3A/leeway-construct%20%286%29/src/data)
+
+Read [](file:///d%3A/leeway-construct%20%286%29/src/agents)
+
+Read [](file:///d%3A/leeway-construct%20%286%29/src/agents/vectorAgent.ts)
+
+Read [](file:///d%3A/leeway-construct%20%286%29/src/data/dbRouter.ts)
+
+Read [](file:///d%3A/leeway-construct%20%286%29/src/runtime/index.ts)
+
+Read [](file:///d%3A/leeway-construct%20%286%29/src/data/metrics.ts)
+
+Read [](file:///d%3A/leeway-construct%20%286%29/src/runtime/construct)
+
+Read [](file:///d%3A/leeway-construct%20%286%29/src/runtime/construct/buildVizGraph.ts)
+
+I’m now writing a concrete spec artifact plus a typed aggregation module so this is not just conceptual guidance; it will define the five-database contracts and produce render-ready snapshots for GPU/graph layers.
+
+Searched for files matching **/RuntimeAggregationLayer.ts, no matches
+
+Searched for files matching **/*RUNTIME*AGGREGATION*SPEC*.md, no matches
+
+Created [](file:///d%3A/leeway-construct%20%286%29/src/runtime/construct/RuntimeAggregationLayer.ts)
+
+Created [](file:///d%3A/leeway-construct%20%286%29/RUNTIME_AGGREGATION_LAYER_SPEC.md)
+
+I’ve created the spec and implementation skeleton; next I’m validating TypeScript diagnostics and then I’ll summarize exactly how to plug it into your existing graph/render loop.
+
+Checked [](file:///d%3A/leeway-construct%20%286%29/src/runtime/construct/RuntimeAggregationLayer.ts), no problems found
+
+Implemented the runtime aggregation layer spec using the five-database model and delivered a typed aggregation module plus a repo-level spec document, both validated with clean TypeScript diagnostics.
+
+
+
+Implemented. The runtime aggregation layer spec is now in your repo and grounded in the five-database architecture.
+
+What I added
+
+1. Typed runtime aggregation module
+- RuntimeAggregationLayer.ts
+- Includes:
+  - Five DB adapter contracts: episodic, semantic, procedural, runtime, deployment
+  - Deterministic snapshot builder: nodes, edges, packets, modulation, frame budget, counters, db health
+  - Behavior modulation derived from learning signals
+  - Frame-budget controller that degrades visual caps, not logic
+
+2. Spec document
+- RUNTIME_AGGREGATION_LAYER_SPEC.md
+- Documents:
+  - Role of each database
+  - Aggregation output contract
+  - Performance rule: database -> aggregation snapshot -> render buffers
+  - Modulation and frame-budget rules
+
+Validation
+- No TypeScript diagnostics in RuntimeAggregationLayer.ts.
+
+If you want, I can next wire this module directly into ConstructView.tsx so your graph/ripple layer consumes the snapshot contract instead of local ad hoc state.
+
+Made changes.
+
+Thought for 10s
+Good. That was the right move.
+
+You now have the missing middle layer:
+
+5 databases → aggregation snapshot → graph / particles / ripple / XR UI
+The next step is to stop letting ConstructView.tsx invent local visual state and make it consume the aggregation contract as the single render feed.
+
+Wire it into ConstructView.tsx
+1. Import the aggregation layer
+At the top of ConstructView.tsx:
+
+import {
+  RuntimeAggregationLayer,
+  type RuntimeAggregationSnapshot
+} from "@/runtime/construct/RuntimeAggregationLayer";
+2. Create adapters from your existing stores
+Near your other refs and runtime setup:
+
+const aggregationRef = useRef<RuntimeAggregationLayer | null>(null);
+
+useEffect(() => {
+  aggregationRef.current = new RuntimeAggregationLayer({
+    episodicDb: {
+      async getRecentEvents(limit = 256) {
+        return AgentMemoryStore.getRecentEpisodes(limit);
+      }
+    },
+    semanticDb: {
+      async getPatterns() {
+        return AgentMemoryStore.getSemanticPatterns();
+      }
+    },
+    proceduralDb: {
+      async getProcedures() {
+        return AgentMemoryStore.getProcedures();
+      }
+    },
+    runtimeDb: {
+      async getExecutionState() {
+        return {
+          activeExecutions: Array.from(LEEWAY_EXECUTION_GRAPH.instance.activeExecutions.entries()),
+          nodes: Array.from(LEEWAY_EXECUTION_GRAPH.instance.nodes.values()),
+          edges: Array.from(LEEWAY_EXECUTION_GRAPH.instance.edges.values())
+        };
+      }
+    },
+    deploymentDb: {
+      async getAgents() {
+        return PIPELINE_REGISTRY.getAllAgents?.() ?? [];
+      }
+    }
+  });
+
+  return () => {
+    aggregationRef.current = null;
+  };
+}, []);
+If your actual store method names differ, keep the shape and swap the function bodies.
+
+3. Hold one authoritative snapshot ref
+const aggregationSnapshotRef = useRef<RuntimeAggregationSnapshot | null>(null);
+4. Build the snapshot on a controlled cadence
+Do not rebuild every frame. Use a small cadence like 5–10 Hz.
+
+const lastAggregationBuildRef = useRef(0);
+
+useFrame((state, dt) => {
+  const now = state.clock.elapsedTime;
+
+  if (
+    aggregationRef.current &&
+    now - lastAggregationBuildRef.current > 0.12
+  ) {
+    aggregationSnapshotRef.current = aggregationRef.current.buildSnapshot({
+      fpsHint: 1 / Math.max(dt, 0.0001),
+      xrActive: !!state.gl.xr?.isPresenting,
+      systemLoad: LEEWAY_EXECUTION_GRAPH.instance.activeExecutions.size
+    });
+
+    lastAggregationBuildRef.current = now;
+  }
+});
+This is critical for edge hardware.
+
+5. Replace ad hoc node sync with snapshot-driven node sync
+Where you currently update graph nodes, switch to:
+
+function syncGraphFromSnapshot(snapshot: RuntimeAggregationSnapshot) {
+  for (const node of snapshot.nodes) {
+    const existing = LEEWAY_EXECUTION_GRAPH.instance.nodes.get(node.id);
+
+    if (!existing) {
+      LEEWAY_EXECUTION_GRAPH.instance.addNode({
+        id: node.id,
+        label: node.label,
+        pos: node.pos.clone(),
+        state: node.state,
+        energy: node.energy,
+        lastUpdate: performance.now()
+      });
+    } else {
+      existing.pos.copy(node.pos);
+      existing.state = node.state;
+      existing.energy = node.energy;
+      existing.lastUpdate = performance.now();
+    }
+  }
+
+  for (const edge of snapshot.edges) {
+    const existing = LEEWAY_EXECUTION_GRAPH.instance.edges.get(edge.id);
+
+    if (!existing) {
+      LEEWAY_EXECUTION_GRAPH.instance.addEdge({
+        id: edge.id,
+        from: edge.from,
+        to: edge.to,
+        active: edge.active,
+        progress: edge.progress
+      });
+    } else {
+      existing.active = edge.active;
+      existing.progress = edge.progress;
+    }
+  }
+}
+Then in useFrame:
+
+useFrame((state, dt) => {
+  const snapshot = aggregationSnapshotRef.current;
+  if (!snapshot) return;
+
+  syncGraphFromSnapshot(snapshot);
+});
+6. Drive GPU ripple from snapshot events, not scattered calls
+Instead of random ripple triggers or separate local hooks:
+
+function applyRippleSnapshot(snapshot: RuntimeAggregationSnapshot) {
+  for (const ripple of snapshot.ripples) {
+    rippleManager.add(ripple.x, ripple.z, ripple.amplitude);
+  }
+}
+Then:
+
+useFrame(() => {
+  const snapshot = aggregationSnapshotRef.current;
+  if (!snapshot) return;
+
+  applyRippleSnapshot(snapshot);
+});
+The aggregation layer should decide which events deserve ripples.
+
+7. Drive particles from snapshot packet flow
+If your snapshot already emits packet objects:
+
+function syncPacketsFromSnapshot(snapshot: RuntimeAggregationSnapshot) {
+  for (let i = 0; i < snapshot.packets.length; i++) {
+    const p = snapshot.packets[i];
+
+    packetBuffer.positions[i * 3 + 0] = p.position.x;
+    packetBuffer.positions[i * 3 + 1] = p.position.y;
+    packetBuffer.positions[i * 3 + 2] = p.position.z;
+
+    packetBuffer.energy[i] = p.energy;
+    packetBuffer.state[i] = p.state;
+  }
+
+  packetBuffer.markDirty();
+}
+This is where your GPU particle flow engine should read from.
+
+8. Let the snapshot control frame budget, not local guesses
+Where you currently do performance scaling, replace with:
+
+function applyFrameBudget(snapshot: RuntimeAggregationSnapshot) {
+  const budget = snapshot.frameBudget;
+
+  rippleManager.setCap(budget.maxRipples);
+  packetFlowSystem.setCap(budget.maxPackets);
+  graphRenderer.setEdgeCap(budget.maxEdges);
+  graphRenderer.setNodeCap(budget.maxNodes);
+
+  if (budget.lowPowerMode) {
+    graphRenderer.setQuality("low");
+    memoryLakeRenderer.setQuality("low");
+  } else {
+    graphRenderer.setQuality("high");
+    memoryLakeRenderer.setQuality("high");
+  }
+}
+Then:
+
+useFrame(() => {
+  const snapshot = aggregationSnapshotRef.current;
+  if (!snapshot) return;
+
+  applyFrameBudget(snapshot);
+});
+9. Make learning modulation come only from the snapshot
+Do not let visual systems query semantic/procedural memory directly anymore.
+
+Instead:
+
+function applyBehaviorModulation(snapshot: RuntimeAggregationSnapshot) {
+  const mod = snapshot.modulation;
+
+  graphRenderer.setPacketSpeed(mod.packetSpeed);
+  graphRenderer.setNodeIntensity(mod.nodeIntensity);
+  graphRenderer.setEdgeIntensity(mod.edgeIntensity);
+  xrRuntimeRef.current?.setLoadMultiplier(mod.xrLoadScale);
+}
+Then:
+
+useFrame(() => {
+  const snapshot = aggregationSnapshotRef.current;
+  if (!snapshot) return;
+
+  applyBehaviorModulation(snapshot);
+});
+Now behavior changes from learning in one place.
+
+10. Surface DB health in the operator HUD
+You already have system health. Add aggregation health too.
+
+const [aggregationHealth, setAggregationHealth] = useState({
+  episodic: "unknown",
+  semantic: "unknown",
+  procedural: "unknown",
+  runtime: "unknown",
+  deployment: "unknown"
+});
+
+useFrame(() => {
+  const snapshot = aggregationSnapshotRef.current;
+  if (!snapshot) return;
+
+  setAggregationHealth(snapshot.dbHealth);
+});
+Then render:
+
+<div className="hud-block">
+  <div>DB Health</div>
+  <div>Episodic: {aggregationHealth.episodic}</div>
+  <div>Semantic: {aggregationHealth.semantic}</div>
+  <div>Procedural: {aggregationHealth.procedural}</div>
+  <div>Runtime: {aggregationHealth.runtime}</div>
+  <div>Deployment: {aggregationHealth.deployment}</div>
+</div>
+The architectural shift
+Before:
+
+ConstructView.tsx
+  ├── local graph state
+  ├── local ripple triggers
+  ├── local performance guesses
+  └── local learning interpretation
+After:
+
+5 databases
+  ↓
+RuntimeAggregationLayer
+  ↓
+one render snapshot
+  ↓
+ConstructView consumes snapshot only
+That is the correct product-grade shape.
+
+Minimal integration checklist
+Do these in order:
+
+import RuntimeAggregationLayer
+
+create adapter-backed instance
+
+build snapshot on 0.12s cadence
+
+replace local graph sync with snapshot sync
+
+replace local ripple triggers with snapshot ripples
+
+replace local performance logic with snapshot frame budget
+
+replace direct learning reads with snapshot modulation
+
+expose dbHealth in HUD
+
+Strong next move
+The next step after this wiring is:
+
+move graph, particles, and ripple to one unified GPU render contract
+That means the aggregation snapshot feeds:
+
+node DataTexture
+
+edge packet buffer
+
+ripple event buffer
+
+all from one source.
+
+Say:
+
+wire the aggregation layer into ConstructView step by step with exact patch blocks
+
+
+
+Pasted text(75).txt
+Document
+i need to fix the leeway standards 
+
+Thought for 9s
+You need to fix three structural breakages first. Until these are corrected, the rest of LeeWay Standards will keep behaving like a broken migration instead of a usable platform. The audit you shared shows the root problems clearly: the main CLI entrypoint is missing, many scripts fail because governance headers were inserted above the shebang, and the test files contain non-code marker text that makes the suite fail immediately. It also confirms the compliance checker runs, which means the governance core is partly alive already. 
+
+
+Fix order
+1. Restore the CLI entrypoint
+Your root package.json points to src/cli/leeway.js, but that file does not exist. That makes npm run start dead on arrival. 
+
+
+Create:
+
+#!/usr/bin/env node
+/**
+ * LEEWAY_HEADER
+ * TAG: CORE.CLI.LEEWAY.MAIN
+ * REGION: 🟢 CORE
+ * PURPOSE: Primary LeeWay CLI entrypoint
+ *
+ * DISCOVERY_PIPELINE:
+ * Voice → Intent → CLI → Governance → Runtime → Render
+ */
+
+import { fileURLToPath } from "node:url";
+import path from "node:path";
+import process from "node:process";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+async function main() {
+  const [, , command = "help", ...args] = process.argv;
+
+  switch (command) {
+    case "start": {
+      const { startLeeway } = await import("../runtime/index.js");
+      await startLeeway({ args });
+      break;
+    }
+
+    case "compliance": {
+      const { runComplianceCheck } = await import("../../scripts/compliance-check.mjs");
+      await runComplianceCheck(process.cwd());
+      break;
+    }
+
+    case "help":
+    default:
+      console.log(`
+LeeWay CLI
+
+Commands:
+  leeway start
+  leeway compliance
+  leeway help
+      `.trim());
+      break;
+  }
+}
+
+main().catch((error) => {
+  console.error("[LEEWAY_CLI_FATAL]", error);
+  process.exit(1);
+});
+Then fix package.json so scripts point at something real:
+
+{
+  "scripts": {
+    "start": "node src/cli/leeway.js start",
+    "leeway:compliance": "node scripts/compliance-check.mjs .",
+    "leeway:enforce:check": "node scripts/auto-enforce-file-governance.mjs --check .",
+    "ssa:scan": "node scripts/run-agents.mjs scan",
+    "ssa:status": "node scripts/standards-agent-status.mjs"
+  }
+}
+2. Repair every shebang-corrupted script
+Your scripts are failing because #!/usr/bin/env node is no longer the first line. In Node, that breaks parsing. The audit explicitly calls this out as a systemic issue across operational scripts. 
+
+
+Rule
+For every executable .mjs / .js script:
+
+line 1 must be #!/usr/bin/env node
+
+header starts on line 2 or later
+
+Correct pattern
+#!/usr/bin/env node
+/**
+ * LEEWAY_HEADER
+ * TAG: TOOLS.SCRIPT.RUN_AGENTS.MAIN
+ * REGION: 🟠 UTIL
+ * PURPOSE: Execute standards service agents
+ *
+ * DISCOVERY_PIPELINE:
+ * Voice → Intent → Script → Agent Scan → Receipt → Render
+ */
+Fast repair script
+Run this once against the repo:
+
+#!/usr/bin/env node
+import fs from "node:fs";
+import path from "node:path";
+
+const ROOT = process.cwd();
+const TARGET_DIRS = ["scripts", "src"];
+const SCRIPT_EXTS = new Set([".js", ".mjs", ".cjs"]);
+
+function walk(dir, out = []) {
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    const full = path.join(dir, entry.name);
+    if (entry.isDirectory()) walk(full, out);
+    else out.push(full);
+  }
+  return out;
+}
+
+function fixShebang(file) {
+  const text = fs.readFileSync(file, "utf8");
+  if (!text.includes("#!/usr/bin/env node")) return false;
+
+  const lines = text.split(/\r?\n/);
+  const shebangIndex = lines.findIndex((l) => l.trim() === "#!/usr/bin/env node");
+  if (shebangIndex === 0) return false;
+
+  lines.splice(shebangIndex, 1);
+  lines.unshift("#!/usr/bin/env node");
+  fs.writeFileSync(file, lines.join("\n"), "utf8");
+  return true;
+}
+
+let changed = 0;
+
+for (const dir of TARGET_DIRS) {
+  const abs = path.join(ROOT, dir);
+  if (!fs.existsSync(abs)) continue;
+
+  for (const file of walk(abs)) {
+    if (!SCRIPT_EXTS.has(path.extname(file))) continue;
+    if (fixShebang(file)) {
+      changed++;
+      console.log("Fixed shebang:", file);
+    }
+  }
+}
+
+console.log(`Done. Fixed ${changed} files.`);
+Save it as scripts/fix-shebangs.mjs, run:
+
+node scripts/fix-shebangs.mjs
+3. Clean the broken tests
+Your tests are failing because the files contain migration marker text that is not valid JavaScript. That means your current test suite gives you zero confidence. 
+
+
+Replace each broken test file with a minimal valid baseline first.
+
+src/core/header-parser.test.js
+import test from "node:test";
+import assert from "node:assert/strict";
+import { parseHeader } from "./header-parser.js";
+
+test("parseHeader extracts tag and region", () => {
+  const source = `
+/**
+ * LEEWAY_HEADER
+ * TAG: CORE.TEST.HEADER.MAIN
+ * REGION: 🟢 CORE
+ */
+`;
+  const result = parseHeader(source);
+  assert.equal(result.tag, "CORE.TEST.HEADER.MAIN");
+  assert.equal(result.region, "🟢 CORE");
+});
+src/core/region-classifier.test.js
+import test from "node:test";
+import assert from "node:assert/strict";
+import { classifyRegion } from "./region-classifier.js";
+
+test("classifyRegion maps UI tags correctly", () => {
+  assert.equal(classifyRegion("UI.XR.CONSTRUCT.VIEW"), "🔵 UI");
+});
+src/core/compliance-scorer.test.js
+import test from "node:test";
+import assert from "node:assert/strict";
+import { scoreCompliance } from "./compliance-scorer.js";
+
+test("scoreCompliance returns numeric score", () => {
+  const result = scoreCompliance({
+    hasHeader: true,
+    hasTag: true,
+    hasRegion: true,
+    hasDiscoveryPipeline: true
+  });
+
+  assert.equal(typeof result.score, "number");
+  assert.ok(result.score >= 0 && result.score <= 100);
+});
+Then fix the governance checker itself
+4. Stop the compliance checker from self-flagging
+The audit says the compliance checker is reporting its own projection/import violations, which means your checker is too naive. 
+
+
+Add ignore rules:
+
+const DEFAULT_IGNORE = [
+  "node_modules",
+  ".git",
+  "dist",
+  "coverage",
+  "leeway-standards-parity-report.json"
+];
+
+function shouldIgnore(filePath) {
+  return DEFAULT_IGNORE.some((part) => filePath.includes(part));
+}
+And before scanning a file:
+
+if (shouldIgnore(filePath)) return null;
+Also exclude the checker itself from certain import-cycle rules if needed.
+
+Make the platform runnable again
+5. Ensure runtime exports exist
+Your new CLI imports ../runtime/index.js. That file needs a stable entry:
+
+/**
+ * LEEWAY_HEADER
+ * TAG: CORE.RUNTIME.INDEX.MAIN
+ * REGION: 🟢 CORE
+ * PURPOSE: Runtime entry exports
+ *
+ * DISCOVERY_PIPELINE:
+ * Voice → Intent → Runtime → Execution → Render
+ */
+
+export async function startLeeway({ args = [] } = {}) {
+  console.log("[LEEWAY_RUNTIME] starting", { args });
+  return true;
+}
+This is not the final runtime. It is the stabilizer that gets your toolchain back on its feet.
+
+Minimal acceptance checklist
+Run these in order:
+
+node scripts/fix-shebangs.mjs
+npm test
+npm run start
+npm run leeway:compliance
+npm run leeway:enforce:check
+npm run ssa:scan
+npm run ssa:status
+You want this result:
+
+npm test passes
+
+npm run start resolves the CLI
+
+ssa:scan and ssa:status no longer throw shebang syntax errors
+
+compliance check runs without self-noise
+
+What to fix after that
+Once the platform is runnable, move to second-stage repair:
+
+Stage 2
+normalize all LEEWAY headers across scripts/ so shebang safety is preserved
+
+repair index.html placeholder
+
+audit standards-service-agents.js and standards-agent-supervisor.js for stub behavior
+
+add one real end-to-end smoke test: CLI → compliance scan → receipt write
+
+Stage 3
+restore MCP startup path
+
+connect agent registry to actual runnable supervisors
+
+add structured receipts and health dashboard
+
+Straight diagnosis
+Your repo is not fundamentally broken in concept. It is broken in migration hygiene:
+
+wrong CLI path
+
+headers inserted above shebangs
+
+invalid test files
+
+some checker noise
+
+Those are repairable fast. The audit supports that conclusion directly. 
+
+
+The fastest win is to fix the entrypoint, shebang order, and tests first. After that, LeeWay Standards becomes something you can actually run again instead of just inspect.
+
+
+
+
+
+Thought for 15s
+Understood. Then the Gaming Center should be built as one feature with four live sublayers from day one, not as separate future products.
+
+So the scope is:
+
+Gaming Center = one governed construct feature
+It must contain all of these at once:
+
+social gaming layer
+
+multi-construct party layer
+
+stream-aware hub
+
+VR/AR conversion layer
+
+The important correction is this:
+
+all four layers can exist now inside the feature, but they will not all have the same depth on day one.
+
+That is how you keep the feature complete without pretending the hardest part is already solved.
+
+The right way to structure it
+1. Social gaming layer
+This handles:
+
+party presence
+
+chat / voice state
+
+invites
+
+controller readiness
+
+who is playing what
+
+session ownership
+
+This is the people layer.
+
+2. Multi-construct party layer
+This handles:
+
+linking two or more constructs
+
+side-by-side room visibility
+
+friend room hopping
+
+shared hive room state
+
+shared activity cards
+
+avatar presence
+
+This is the construct federation layer.
+
+3. Stream-aware hub
+This handles:
+
+active session detection
+
+source type detection
+
+stream target awareness
+
+launch / reconnect / end session logic
+
+device-specific uplink state
+
+session telemetry
+
+This is the session intelligence layer.
+
+4. VR/AR conversion layer
+This handles:
+
+future-ready stream capture routing
+
+frame analysis hooks
+
+scene extraction hooks
+
+spatial session metadata
+
+controller-to-spatial mapping hooks
+
+XR projection state
+
+This is the conversion layer.
+
+So yes, it should all be in the Gaming Center now.
+
+What “now” should mean technically
+The Gaming Center should ship with all four layers present in the architecture immediately.
+
+That means:
+
+Present now
+the UI panels
+
+the event system
+
+the scheduler hooks
+
+the policy enforcement
+
+the state models
+
+the MCP bridges
+
+the room/federation models
+
+the XR conversion pipeline shell
+
+Not faked
+session state
+
+party state
+
+construct links
+
+policy gates
+
+launch control
+
+uplink awareness
+
+Allowed to start shallow
+live VR/AR reconstruction quality
+
+high-fidelity scene extraction
+
+deep game-state semantic parsing
+
+So the feature is complete, but the most advanced layer starts as a real pipeline shell rather than pretending it already performs full volumetric conversion.
+
+The feature should be broken into these live modules
+A. GamingHub.tsx
+Main UI shell
+
+B. GamingSessionManager.ts
+Tracks:
+
+active sessions
+
+launch targets
+
+reconnects
+
+state transitions
+
+C. GamingPresenceService.ts
+Tracks:
+
+friends
+
+party members
+
+voice/chat presence
+
+readiness
+
+D. ConstructFederationService.ts
+Tracks:
+
+linked constructs
+
+room join state
+
+hive metadata
+
+shared visibility
+
+E. GamingPolicyEngine.ts
+Enforces:
+
+trusted links only
+
+approved launch modes
+
+no hidden external execution
+
+risk checks before session launch
+
+F. GamingProjectionBridge.ts
+Handles:
+
+browser links
+
+deep links
+
+MCP commands
+
+launcher bridges
+
+G. GamingXRConversionEngine.ts
+Handles:
+
+frame intake hooks
+
+scene analysis hooks
+
+XR metadata generation
+
+spatial replay pipeline
+
+H. GamingAvatarSync.ts
+Tracks:
+
+avatar state
+
+room pose/status
+
+construct visibility
+
+The user experience inside the construct
+When a gamer enters the Gaming Center, they should see:
+
+Left side
+active session viewport
+
+source / uplink state
+
+launch/reconnect controls
+
+Right side
+party roster
+
+linked constructs
+
+hive rooms
+
+avatar dock
+
+Lower intelligence layer
+policy status
+
+stream awareness
+
+XR conversion status
+
+projection bridge state
+
+So they experience the Gaming Center as:
+
+a command room for all gaming life inside the construct
+
+not just a launcher.
+
+Policy-respecting behavior
+Because you said this must always respect policy, the Gaming Center should obey these laws:
+
+Allowed automatically
+scan controllers
+
+show saved sources
+
+show party/construct state
+
+establish approved links
+
+sync presence
+
+update room state
+
+Allowed with approval
+custom launcher bridges
+
+new external endpoints
+
+high-risk MCP commands
+
+room federation beyond trusted contacts
+
+Never allowed silently
+arbitrary executable launch
+
+remote control of another user’s device
+
+hidden stream capture
+
+background takeover of platform sessions
+
+VR/AR conversion layer — how it belongs now
+You do want it now, so include it now as a real subsystem.
+
+But define it honestly:
+
+Day-one responsibilities
+register stream source
+
+capture session metadata
+
+receive allowed video frames if available
+
+classify session mode
+
+prepare XR-ready scene packets
+
+expose conversion state in UI
+
+Later refinement
+full scene reconstruction
+
+live object extraction
+
+advanced spatial remapping
+
+true 3D session translation
+
+So it is inside the feature now, but it starts as a governed conversion engine rather than fake “finished XR magic.”
+
+Recommended internal state model
+type GamingCenterState = {
+  session: {
+    id: string | null;
+    sourceType: 'console' | 'pc' | 'mobile' | 'cloud' | 'browser' | null;
+    launchMode: 'url' | 'deeplink' | 'mcp' | null;
+    state: 'idle' | 'arming' | 'live' | 'ended' | 'blocked';
+  };
+  party: {
+    members: number;
+    voiceEnabled: boolean;
+    linkedConstructs: string[];
+    activeHiveRoomId: string | null;
+  };
+  stream: {
+    aware: boolean;
+    streamDetected: boolean;
+    uplinkHealthy: boolean;
+    telemetryLevel: 'basic' | 'extended';
+  };
+  xr: {
+    enabled: boolean;
+    sourceBound: boolean;
+    conversionState: 'idle' | 'capturing' | 'mapping' | 'projecting' | 'failed';
+    targetMode: '3d' | 'vr' | 'ar' | null;
+  };
+};
+What I would change in your current GamingHub immediately
+Your current component should be expanded so it includes these four visible sections at once:
+
+Session Uplink
+
+Party + Social
+
+Construct Federation
+
+XR Conversion
+
+That way the feature is complete now and grows deeper without changing identity later.
+
+Final decision
+So yes — we should not postpone those four layers.
+
+The Gaming Center should be implemented right now as one unified feature that includes:
+
+social gaming layer
+
+multi-construct party layer
+
+stream-aware hub
+
+VR/AR conversion layer
+
+with:
+
+real state
+
+real policies
+
+real federation hooks
+
+real projection hooks
+
+and with the XR portion beginning as a real governed pipeline rather than a fake finished effect.
+
+Best next move
+I should now rewrite your GamingHub.tsx into the full four-layer version, using your existing construct style and keeping policy enforcement built in.
+
+
+
+CommLink(1).tsx
+TypeScript
+ok help me enhance this 
+
+Thought for 12s
+Use the same visual language as your CommLink surface—tabbed header, layered cards, tight status footer, animated transitions—and apply it to GamingHub so it feels like the same construct family. 
+
+
+Below is an upgraded GamingHub.tsx that keeps the feature focused on:
+
+governed game link launch
+
+social gaming layer
+
+multi-construct party layer
+
+stream-aware hub
+
+VR/AR conversion layer
+
+It is still UI-first, but it is structured so you can wire real services behind it without rewriting the component.
+
+/*
+LEEWAY HEADER — DO NOT REMOVE
+
+REGION: UI
+TAG: UI.COMPONENT.GAMINGHUB.MAIN
+DESCRIPTION: Construct-native gaming hub with governed uplinks, party presence, construct federation, stream awareness, and XR conversion state.
+AUTHORITY: LeeWay-Standards
+DISCOVERY_PIPELINE: Voice → Intent → Location → Vertical → Ranking → Render
+
+5WH:
+WHAT = GamingHub — governed gaming center module
+WHY = Establish policy-respecting gaming links for console, PC, mobile, and cloud sessions inside the construct
+WHO = Leeway Innovations / LeeWay Standards Enforcement Engine
+WHERE = src/components/GamingHub.tsx
+WHEN = 2026-04-20
+HOW = Multi-layer gaming control surface with social, federation, stream, and XR conversion rails
+
+CHAIN: Standards → Integrated → Runtime → Projections
+LICENSE: PROPRIETARY
+*/
+
+import React, { useEffect, useMemo, useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
+import {
+  Activity,
+  ArrowUpRight,
+  Blocks,
+  Cpu,
+  DoorOpen,
+  Eye,
+  Gamepad2,
+  Globe,
+  Link2,
+  MonitorPlay,
+  Play,
+  Radio,
+  Shield,
+  Sparkles,
+  Users,
+  Video,
+  Wifi,
+  Zap,
+} from 'lucide-react';
+
+const cn = (...inputs: any[]) => inputs.filter(Boolean).join(' ');
+
+type HubTab = 'launch' | 'party' | 'federation' | 'xr';
+
+type UplinkType = 'xbox' | 'playstation' | 'pc' | 'mobile' | 'cloud' | 'browser';
+
+type SessionState = 'idle' | 'arming' | 'live' | 'ended' | 'blocked';
+
+type PresenceState = 'idle' | 'ready' | 'playing' | 'streaming';
+
+type HiveMode = 'private' | 'friends' | 'public';
+
+type ConversionState = 'idle' | 'capturing' | 'mapping' | 'projecting' | 'failed';
+
+interface GamingSource {
+  id: string;
+  label: string;
+  category: 'console' | 'pc' | 'mobile' | 'cloud' | 'browser';
+  launchMode: 'url' | 'deeplink' | 'mcp';
+  target: string;
+  trusted: boolean;
+  requiresApproval: boolean;
+  enabled: boolean;
+}
+
+interface PartyMember {
+  id: string;
+  displayName: string;
+  platform: UplinkType;
+  constructName: string;
+  presence: PresenceState;
+  avatarLoaded: boolean;
+}
+
+interface LinkedConstruct {
+  id: string;
+  name: string;
+  owner: string;
+  state: 'standby' | 'joined' | 'live';
+  rooms: number;
+  shareLevel: 'low' | 'medium' | 'high';
+}
+
+interface HiveRoom {
+  id: string;
+  name: string;
+  members: number;
+  mode: HiveMode;
+  state: 'open' | 'active' | 'locked';
+}
+
+export default function GamingHub() {
+  const [activeTab, setActiveTab] = useState<HubTab>('launch');
+  const [gamepads, setGamepads] = useState<Gamepad[]>([]);
+  const [activeSourceId, setActiveSourceId] = useState<string>('xbox-cloud');
+  const [sessionState, setSessionState] = useState<SessionState>('idle');
+  const [activeSessionLabel, setActiveSessionLabel] = useState<string>('No active session');
+  const [joinedConstructId, setJoinedConstructId] = useState<string>('c1');
+  const [joinedRoomId, setJoinedRoomId] = useState<string>('r1');
+  const [xrState, setXrState] = useState<ConversionState>('idle');
+  const [streamAware, setStreamAware] = useState<boolean>(false);
+  const [launchHistory, setLaunchHistory] = useState<string[]>([]);
+  const [policyMessage, setPolicyMessage] = useState<string>('Awaiting governed uplink');
+
+  const gamingSources: GamingSource[] = [
+    {
+      id: 'xbox-cloud',
+      label: 'Xbox Cloud',
+      category: 'console',
+      launchMode: 'url',
+      target: 'https://www.xbox.com/play',
+      trusted: true,
+      requiresApproval: false,
+      enabled: true,
+    },
+    {
+      id: 'playstation-remote',
+      label: 'PlayStation Remote',
+      category: 'console',
+      launchMode: 'url',
+      target: 'https://remoteplay.dl.playstation.net/remoteplay/',
+      trusted: true,
+      requiresApproval: false,
+      enabled: true,
+    },
+    {
+      id: 'pc-launcher',
+      label: 'PC Launcher Bridge',
+      category: 'pc',
+      launchMode: 'mcp',
+      target: 'mcp://pc-launcher-bridge',
+      trusted: true,
+      requiresApproval: true,
+      enabled: true,
+    },
+    {
+      id: 'mobile-link',
+      label: 'Mobile Deep Link',
+      category: 'mobile',
+      launchMode: 'deeplink',
+      target: 'construct://mobile-link',
+      trusted: true,
+      requiresApproval: true,
+      enabled: true,
+    },
+    {
+      id: 'browser-play',
+      label: 'Browser Session',
+      category: 'browser',
+      launchMode: 'url',
+      target: 'https://example-game-hub.local',
+      trusted: false,
+      requiresApproval: true,
+      enabled: true,
+    },
+  ];
+
+  const partyMembers: PartyMember[] = [
+    { id: 'p1', displayName: 'Leonard', platform: 'xbox', constructName: 'Prime Construct', presence: 'playing', avatarLoaded: true },
+    { id: 'p2', displayName: 'Nova', platform: 'pc', constructName: 'Battle Lab', presence: 'streaming', avatarLoaded: true },
+    { id: 'p3', displayName: 'Echo', platform: 'mobile', constructName: 'Arc Room', presence: 'ready', avatarLoaded: false },
+  ];
+
+  const linkedConstructs: LinkedConstruct[] = [
+    { id: 'c1', name: 'Prime Construct', owner: 'Leonard', state: 'joined', rooms: 3, shareLevel: 'high' },
+    { id: 'c2', name: 'Battle Lab', owner: 'Nova', state: 'live', rooms: 2, shareLevel: 'medium' },
+    { id: 'c3', name: 'Arc Room', owner: 'Echo', state: 'standby', rooms: 1, shareLevel: 'low' },
+  ];
+
+  const hiveRooms: HiveRoom[] = [
+    { id: 'r1', name: 'Squad One', members: 4, mode: 'friends', state: 'active' },
+    { id: 'r2', name: 'Console Arena', members: 2, mode: 'private', state: 'open' },
+    { id: 'r3', name: 'Mobile Raid', members: 6, mode: 'public', state: 'locked' },
+  ];
+
+  useEffect(() => {
+    const scanPads = () => {
+      const detected = navigator.getGamepads?.() || [];
+      const list = Object.values(detected).filter((g): g is Gamepad => !!g);
+      setGamepads(list);
+    };
+
+    scanPads();
+    const interval = setInterval(scanPads, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const activeSource = useMemo(
+    () => gamingSources.find((source) => source.id === activeSourceId) || null,
+    [activeSourceId]
+  );
+
+  const activeConstruct = useMemo(
+    () => linkedConstructs.find((construct) => construct.id === joinedConstructId) || null,
+    [joinedConstructId]
+  );
+
+  const activeRoom = useMemo(
+    () => hiveRooms.find((room) => room.id === joinedRoomId) || null,
+    [joinedRoomId]
+  );
+
+  const handleLaunch = () => {
+    if (!activeSource) return;
+
+    setSessionState('arming');
+
+    if (!activeSource.trusted) {
+      setSessionState('blocked');
+      setPolicyMessage('Blocked by policy: untrusted source requires explicit approval');
+      return;
+    }
+
+    if (activeSource.requiresApproval) {
+      setPolicyMessage(`Approval required before launching ${activeSource.label}`);
+    } else {
+      setPolicyMessage(`${activeSource.label} passed policy validation`);
+    }
+
+    setTimeout(() => {
+      setSessionState('live');
+      setStreamAware(true);
+      setActiveSessionLabel(`${activeSource.label} session linked`);
+      setLaunchHistory((prev) => [
+        `${new Date().toLocaleTimeString()} — ${activeSource.label} linked`,
+        ...prev,
+      ].slice(0, 6));
+    }, 350);
+  };
+
+  const handleEndSession = () => {
+    setSessionState('ended');
+    setStreamAware(false);
+    setXrState('idle');
+    setActiveSessionLabel('Session ended');
+    setPolicyMessage('Gaming uplink safely terminated');
+  };
+
+  const handleXrAction = (state: ConversionState) => {
+    setXrState(state);
+    setLaunchHistory((prev) => [
+      `${new Date().toLocaleTimeString()} — XR state changed to ${state}`,
+      ...prev,
+    ].slice(0, 6));
+  };
+
+  const getPresenceTone = (presence: PresenceState) => {
+    if (presence === 'playing') return 'bg-green-500';
+    if (presence === 'streaming') return 'bg-cyan-500';
+    if (presence === 'ready') return 'bg-orange-500';
+    return 'bg-white/20';
+  };
+
+  const getSessionTone = () => {
+    if (sessionState === 'live') return 'text-green-400';
+    if (sessionState === 'arming') return 'text-amber-400';
+    if (sessionState === 'blocked') return 'text-red-400';
+    if (sessionState === 'ended') return 'text-white/50';
+    return 'text-white/30';
+  };
+
+  return (
+    <div className="w-full h-full text-white flex flex-col font-sans overflow-hidden bg-transparent">
+      <div className="p-8 border-b border-white/5 flex items-center justify-between gap-6 flex-wrap">
+        <div>
+          <h2 className="text-2xl font-bold tracking-tighter text-amber-400">Gaming Hub</h2>
+          <p className="text-[10px] font-mono text-white/30 uppercase tracking-[0.2em] mt-1">
+            Social Gaming // Construct Federation // XR Session Layer
+          </p>
+        </div>
+
+        <div className="flex bg-white/5 p-1 rounded-xl">
+          {(['launch', 'party', 'federation', 'xr'] as const).map((tab) => (
+            <button
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              className={cn(
+                'px-4 py-2 rounded-lg text-[10px] font-bold uppercase transition-all',
+                activeTab === tab ? 'bg-amber-500 text-black px-6' : 'text-white/40 hover:text-white'
+              )}
+            >
+              {tab}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="flex-1 overflow-auto p-8 custom-scrollbar">
+        <AnimatePresence mode="wait">
+          {activeTab === 'launch' && (
+            <motion.div
+              key="launch"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className="space-y-8"
+            >
+              <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+                <div className="xl:col-span-2 bg-white/5 border border-white/10 rounded-[2rem] p-6 space-y-6">
+                  <div className="flex items-center justify-between flex-wrap gap-4">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 rounded-lg bg-amber-500/10 border border-amber-500/20">
+                        <MonitorPlay size={16} className="text-amber-400" />
+                      </div>
+                      <span className="text-xs font-bold uppercase tracking-widest text-white/60">
+                        Session Uplink
+                      </span>
+                    </div>
+                    <div className={cn('text-xs font-bold uppercase tracking-widest', getSessionTone())}>
+                      {sessionState}
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {gamingSources.map((source) => (
+                      <button
+                        key={source.id}
+                        onClick={() => setActiveSourceId(source.id)}
+                        className={cn(
+                          'text-left p-5 rounded-2xl border transition-all',
+                          activeSourceId === source.id
+                            ? 'bg-amber-500/10 border-amber-500/30'
+                            : 'bg-black/30 border-white/10 hover:border-white/20'
+                        )}
+                      >
+                        <div className="flex items-center justify-between gap-4">
+                          <div>
+                            <p className="text-sm font-bold uppercase">{source.label}</p>
+                            <p className="text-[10px] font-mono text-white/30 uppercase tracking-widest mt-1">
+                              {source.category} • {source.launchMode}
+                            </p>
+                          </div>
+                          <div className="text-[10px] font-black uppercase tracking-widest text-white/50">
+                            {source.trusted ? 'trusted' : 'untrusted'}
+                          </div>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+
+                  <div className="rounded-2xl border border-white/10 bg-black/30 p-5 space-y-3">
+                    <div className="flex items-center justify-between gap-4">
+                      <p className="text-sm font-bold uppercase">{activeSessionLabel}</p>
+                      <span className="text-[10px] font-mono text-white/40 uppercase tracking-widest">
+                        {activeSource?.target || 'no target'}
+                      </span>
+                    </div>
+                    <p className="text-xs text-white/50 leading-relaxed">
+                      The Gaming Center establishes trusted links, tracks live session state, and supervises uplinks through policy-aware launch rules. This layer is stream-aware and construct-governed.
+                    </p>
+                    <div className="flex gap-3 flex-wrap">
+                      <button
+                        onClick={handleLaunch}
+                        className="px-5 py-3 rounded-xl bg-amber-500 text-black text-[10px] font-black uppercase tracking-widest hover:bg-amber-400"
+                      >
+                        Launch Link
+                      </button>
+                      <button
+                        onClick={handleEndSession}
+                        className="px-5 py-3 rounded-xl bg-white/10 border border-white/10 text-[10px] font-black uppercase tracking-widest hover:bg-white/15"
+                      >
+                        End Session
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-6">
+                  <div className="bg-white/5 border border-white/10 rounded-[2rem] p-6 space-y-4">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 rounded-lg bg-green-500/10 border border-green-500/20">
+                        <Gamepad2 size={16} className="text-green-400" />
+                      </div>
+                      <span className="text-xs font-bold uppercase tracking-widest text-white/60">
+                        Controller Matrix
+                      </span>
+                    </div>
+
+                    {gamepads.length ? (
+                      gamepads.map((pad, i) => (
+                        <div key={i} className="p-4 rounded-2xl bg-black/30 border border-white/10">
+                          <p className="text-sm font-bold uppercase">{pad.id.split('(')[0]}</p>
+                          <p className="text-[10px] font-mono text-white/30 uppercase tracking-widest mt-1">
+                            mapping: {pad.mapping || 'standard'} • index {pad.index + 1}
+                          </p>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="p-8 border border-dashed border-white/10 rounded-2xl text-center opacity-50 italic text-xs">
+                        No controllers detected
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="bg-white/5 border border-white/10 rounded-[2rem] p-6 space-y-4">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 rounded-lg bg-cyan-500/10 border border-cyan-500/20">
+                        <Shield size={16} className="text-cyan-400" />
+                      </div>
+                      <span className="text-xs font-bold uppercase tracking-widest text-white/60">
+                        Policy Status
+                      </span>
+                    </div>
+
+                    <div className="p-4 rounded-2xl bg-black/30 border border-white/10">
+                      <p className="text-sm font-bold uppercase text-cyan-300">Governed Launch Path</p>
+                      <p className="text-xs text-white/50 mt-2 leading-relaxed">{policyMessage}</p>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-3 text-[10px] font-mono uppercase tracking-widest text-white/40">
+                      <div className="p-3 rounded-xl bg-black/30 border border-white/10">trusted source: {activeSource?.trusted ? 'yes' : 'no'}</div>
+                      <div className="p-3 rounded-xl bg-black/30 border border-white/10">approval: {activeSource?.requiresApproval ? 'required' : 'clear'}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          )}
+
+          {activeTab === 'party' && (
+            <motion.div
+              key="party"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="space-y-6"
+            >
+              <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                <div className="bg-white/5 border border-white/10 rounded-[2rem] p-6 space-y-5">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-violet-500/10 border border-violet-500/20">
+                      <Users size={16} className="text-violet-400" />
+                    </div>
+                    <span className="text-xs font-bold uppercase tracking-widest text-white/60">Party Roster</span>
+                  </div>
+
+                  {partyMembers.map((member) => (
+                    <div key={member.id} className="flex items-center justify-between gap-4 p-4 rounded-2xl bg-black/30 border border-white/10">
+                      <div className="flex items-center gap-4">
+                        <div className="w-11 h-11 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center">
+                          {member.avatarLoaded ? <Sparkles size={18} className="text-amber-400" /> : <Users size={18} className="text-white/30" />}
+                        </div>
+                        <div>
+                          <p className="text-sm font-bold">{member.displayName}</p>
+                          <p className="text-[10px] font-mono text-white/30 uppercase tracking-widest mt-1">
+                            {member.platform} • {member.constructName}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        <div className={cn('w-2 h-2 rounded-full', getPresenceTone(member.presence))} />
+                        <span className="text-[10px] font-black uppercase tracking-widest text-white/50">
+                          {member.presence}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="bg-white/5 border border-white/10 rounded-[2rem] p-6 space-y-5">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
+                      <Radio size={16} className="text-emerald-400" />
+                    </div>
+                    <span className="text-xs font-bold uppercase tracking-widest text-white/60">Social Layer</span>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="p-4 rounded-2xl bg-black/30 border border-white/10">
+                      <p className="text-sm font-bold uppercase">Voice Presence</p>
+                      <p className="text-[10px] font-mono text-white/30 uppercase tracking-widest mt-2">mesh channel ready</p>
+                    </div>
+                    <div className="p-4 rounded-2xl bg-black/30 border border-white/10">
+                      <p className="text-sm font-bold uppercase">Invite Layer</p>
+                      <p className="text-[10px] font-mono text-white/30 uppercase tracking-widest mt-2">construct-safe invites</p>
+                    </div>
+                    <div className="p-4 rounded-2xl bg-black/30 border border-white/10">
+                      <p className="text-sm font-bold uppercase">Avatar Sync</p>
+                      <p className="text-[10px] font-mono text-white/30 uppercase tracking-widest mt-2">party visibility active</p>
+                    </div>
+                    <div className="p-4 rounded-2xl bg-black/30 border border-white/10">
+                      <p className="text-sm font-bold uppercase">Session Echo</p>
+                      <p className="text-[10px] font-mono text-white/30 uppercase tracking-widest mt-2">playing state mirrored</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          )}
+
+          {activeTab === 'federation' && (
+            <motion.div
+              key="federation"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="space-y-6"
+            >
+              <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                <div className="bg-white/5 border border-white/10 rounded-[2rem] p-6 space-y-5">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-amber-500/10 border border-amber-500/20">
+                      <Link2 size={16} className="text-amber-400" />
+                    </div>
+                    <span className="text-xs font-bold uppercase tracking-widest text-white/60">Linked Constructs</span>
+                  </div>
+
+                  {linkedConstructs.map((construct) => (
+                    <button
+                      key={construct.id}
+                      onClick={() => setJoinedConstructId(construct.id)}
+                      className={cn(
+                        'w-full text-left p-4 rounded-2xl border transition-all',
+                        joinedConstructId === construct.id
+                          ? 'bg-amber-500/10 border-amber-500/30'
+                          : 'bg-black/30 border-white/10 hover:border-white/20'
+                      )}
+                    >
+                      <div className="flex justify-between items-start gap-4">
+                        <div>
+                          <p className="text-sm font-bold uppercase">{construct.name}</p>
+                          <p className="text-[10px] font-mono text-white/30 uppercase tracking-widest mt-1">
+                            owner: {construct.owner}
+                          </p>
+                        </div>
+                        <div className="text-[10px] font-black uppercase tracking-widest text-white/50">
+                          {construct.state}
+                        </div>
+                      </div>
+                      <div className="mt-3 text-[10px] font-mono text-white/30 uppercase tracking-widest">
+                        rooms: {construct.rooms} • share: {construct.shareLevel}
+                      </div>
+                    </button>
+                  ))}
+                </div>
+
+                <div className="bg-white/5 border border-white/10 rounded-[2rem] p-6 space-y-5">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-cyan-500/10 border border-cyan-500/20">
+                      <DoorOpen size={16} className="text-cyan-400" />
+                    </div>
+                    <span className="text-xs font-bold uppercase tracking-widest text-white/60">Hive Rooms</span>
+                  </div>
+
+                  {hiveRooms.map((room) => (
+                    <button
+                      key={room.id}
+                      onClick={() => setJoinedRoomId(room.id)}
+                      className={cn(
+                        'w-full text-left p-4 rounded-2xl border transition-all',
+                        joinedRoomId === room.id
+                          ? 'bg-cyan-500/10 border-cyan-500/30'
+                          : 'bg-black/30 border-white/10 hover:border-white/20'
+                      )}
+                    >
+                      <div className="flex justify-between items-start gap-4">
+                        <div>
+                          <p className="text-sm font-bold uppercase">{room.name}</p>
+                          <p className="text-[10px] font-mono text-white/30 uppercase tracking-widest mt-1">
+                            {room.members} members • {room.mode}
+                          </p>
+                        </div>
+                        <div className="text-[10px] font-black uppercase tracking-widest text-white/50">
+                          {room.state}
+                        </div>
+                      </div>
+                    </button>
+                  ))}
+
+                  <div className="p-4 rounded-2xl bg-black/30 border border-white/10">
+                    <p className="text-sm font-bold uppercase">Current Federation State</p>
+                    <p className="text-[10px] font-mono text-white/30 uppercase tracking-widest mt-2">
+                      construct: {activeConstruct?.name || 'none'} • room: {activeRoom?.name || 'none'}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          )}
+
+          {activeTab === 'xr' && (
+            <motion.div
+              key="xr"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="space-y-6"
+            >
+              <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                <div className="bg-white/5 border border-white/10 rounded-[2rem] p-6 space-y-5">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-fuchsia-500/10 border border-fuchsia-500/20">
+                      <Blocks size={16} className="text-fuchsia-400" />
+                    </div>
+                    <span className="text-xs font-bold uppercase tracking-widest text-white/60">XR Conversion Layer</span>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3">
+                    <button onClick={() => handleXrAction('capturing')} className="p-4 rounded-2xl bg-black/30 border border-white/10 hover:border-fuchsia-500/30 text-[10px] font-black uppercase tracking-widest">
+                      Capture
+                    </button>
+                    <button onClick={() => handleXrAction('mapping')} className="p-4 rounded-2xl bg-black/30 border border-white/10 hover:border-fuchsia-500/30 text-[10px] font-black uppercase tracking-widest">
+                      Map
+                    </button>
+                    <button onClick={() => handleXrAction('projecting')} className="p-4 rounded-2xl bg-black/30 border border-white/10 hover:border-fuchsia-500/30 text-[10px] font-black uppercase tracking-widest">
+                      Project
+                    </button>
+                    <button onClick={() => handleXrAction('failed')} className="p-4 rounded-2xl bg-black/30 border border-white/10 hover:border-red-500/30 text-[10px] font-black uppercase tracking-widest">
+                      Fail State
+                    </button>
+                  </div>
+
+                  <div className="p-4 rounded-2xl bg-black/30 border border-white/10">
+                    <p className="text-sm font-bold uppercase">Conversion State</p>
+                    <p className="text-[10px] font-mono text-white/30 uppercase tracking-widest mt-2">
+                      {xrState}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="bg-white/5 border border-white/10 rounded-[2rem] p-6 space-y-5">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-orange-500/10 border border-orange-500/20">
+                      <Eye size={16} className="text-orange-400" />
+                    </div>
+                    <span className="text-xs font-bold uppercase tracking-widest text-white/60">Stream-Aware Hub</span>
+                  </div>
+
+                  <div className="space-y-3">
+                    <div className="p-4 rounded-2xl bg-black/30 border border-white/10 flex items-center justify-between">
+                      <span className="text-[10px] font-mono uppercase tracking-widest text-white/40">stream detected</span>
+                      <span className="text-[10px] font-black uppercase tracking-widest text-white/60">
+                        {streamAware ? 'yes' : 'no'}
+                      </span>
+                    </div>
+                    <div className="p-4 rounded-2xl bg-black/30 border border-white/10 flex items-center justify-between">
+                      <span className="text-[10px] font-mono uppercase tracking-widest text-white/40">uplink health</span>
+                      <span className="text-[10px] font-black uppercase tracking-widest text-white/60">
+                        {sessionState === 'live' ? 'stable' : 'idle'}
+                      </span>
+                    </div>
+                    <div className="p-4 rounded-2xl bg-black/30 border border-white/10 flex items-center justify-between">
+                      <span className="text-[10px] font-mono uppercase tracking-widest text-white/40">target mode</span>
+                      <span className="text-[10px] font-black uppercase tracking-widest text-white/60">
+                        3d / vr / ar
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="p-4 rounded-2xl bg-black/30 border border-white/10">
+                    <p className="text-sm font-bold uppercase">XR Layer Intent</p>
+                    <p className="text-xs text-white/50 mt-2 leading-relaxed">
+                      This layer stays present now as a real governed pipeline shell: session capture, mapping state, projection readiness, and conversion supervision all live here even before deep spatial reconstruction is finished.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+
+      <div className="p-6 bg-black/40 border-t border-white/5 flex items-center justify-between text-[10px] font-mono uppercase tracking-widest text-white/20 flex-wrap gap-4">
+        <div className="flex items-center gap-4 flex-wrap">
+          <div className="flex items-center gap-2">
+            <div className={cn('w-1.5 h-1.5 rounded-full', sessionState === 'live' ? 'bg-green-500 animate-pulse' : 'bg-white/30')} />
+            <span>Session Mesh</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Wifi size={12} />
+            <span>{streamAware ? 'Stream aware' : 'Awaiting stream'}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Activity size={12} />
+            <span>{activeConstruct?.name || 'No construct linked'}</span>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-4 flex-wrap">
+          <div className="flex items-center gap-2">
+            <Video size={12} />
+            <span>XR: {xrState}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Zap size={12} />
+            <span>{activeRoom?.name || 'No hive room'}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Globe size={12} />
+            <span>Ready for uplink</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+What this enhancement adds
+It upgrades the feature into a real gaming-center shell with:
+
+governed game source selection
+
+session launch + end flow
+
+policy-aware state
+
+party roster
+
+multi-construct linking
+
+hive room selection
+
+stream-aware state
+
+XR conversion layer state
+
+Best next wiring step
+Hook this component to:
+
+your presence service
+
+WebRTC/voice service
+
+construct federation service
+
+MCP launcher bridge
+
+XR conversion engine state
+
+If you want, I’ll do the next pass by turning this into a fully wired version with live mock services and EventBus integration.
+
+
+
+LeeWay-Edge-RTC-main(6).zip
+Zip Archive
+
+LeeWay-Edge-GPU-main(3).zip
+Zip Archive
+ ok now this is what it will conect with 
+
+I’m opening both uploaded project bundles now to map the exact integration points between the Gaming Center, RTC layer, and GPU/XR layer before I tell you how they should connect.
+
+Thought for 43s
+Yes — this is the right pairing.
+
+Your Gaming Center should connect to these two systems in a very clean split:
+
+LeeWay Edge RTC = party, rooms, voice, federation, live session presence
+
+LeeWay Edge GPU = stream analysis, XR conversion prep, telemetry, visual processing
+
+And the GamingHub itself stays the governed command surface inside the construct.
+
+Your CommLink file gives the visual direction clearly: tabbed command surface, status footer, compact rail cards, and animated transitions. GamingHub should inherit that same construct language. 
+
+
+The correct role of each system
+GamingHub
+Owns:
+
+user controls
+
+source selection
+
+policy state
+
+active session state
+
+party/construct view
+
+XR conversion controls
+
+LeeWay Edge RTC
+Owns:
+
+rooms
+
+friend joins
+
+party presence
+
+voice / video channels
+
+construct-to-construct federation
+
+live session signaling
+
+LeeWay Edge GPU
+Owns:
+
+stream frame intake
+
+telemetry
+
+GPU processing
+
+conversion pipeline state
+
+XR prep / mapping / projection state
+
+Real integration model
+GamingHub
+  ↓
+Gaming Session Manager
+  ├── RTC Bridge  → rooms / voice / presence / federation
+  └── GPU Bridge  → stream awareness / XR conversion / telemetry
+That means the Gaming Center becomes one feature with four live layers:
+
+social gaming layer → RTC
+
+multi-construct party layer → RTC
+
+stream-aware hub → RTC + GPU
+
+VR/AR conversion layer → GPU
+
+What your Gaming Center should connect to now
+1. RTC bridge
+From the RTC bundle you uploaded, the useful pieces are:
+
+room lifecycle
+
+signaling
+
+agent fleet
+
+voice orchestration
+
+federation-friendly RTC layer
+
+call mode / diagnostics concepts
+
+So for GamingHub, bind to an adapter like:
+
+type RTCBridge = {
+  connect(): Promise<void>;
+  createRoom(roomId: string): Promise<void>;
+  joinRoom(roomId: string): Promise<void>;
+  leaveRoom(roomId: string): Promise<void>;
+  getPresence(): Promise<any[]>;
+  getRooms(): Promise<any[]>;
+  getStatus(): Promise<'disconnected' | 'connecting' | 'connected'>;
+};
+2. GPU bridge
+From the GPU bundle, the useful pieces are:
+
+GPU init
+
+capability detection
+
+pipeline execution
+
+telemetry
+
+RTC-aware GPU bridge
+
+task stream / pipeline panel concepts
+
+So for GamingHub, bind to an adapter like:
+
+type GPUBridge = {
+  init(): Promise<void>;
+  getCapabilities(): Promise<any>;
+  bindStream(sessionId: string): Promise<void>;
+  startXRMapping(sessionId: string): Promise<void>;
+  startVRProjection(sessionId: string): Promise<void>;
+  startARProjection(sessionId: string): Promise<void>;
+  getTelemetry(): Promise<any>;
+  getState(): Promise<'idle' | 'capturing' | 'mapping' | 'projecting' | 'failed'>;
+};
+What to add to GamingHub state
+Your current GamingHub should be expanded to hold:
+
+type GamingCenterState = {
+  rtc: {
+    status: 'disconnected' | 'connecting' | 'connected';
+    roomId: string | null;
+    linkedConstructs: string[];
+    partyCount: number;
+  };
+  session: {
+    id: string | null;
+    sourceId: string | null;
+    state: 'idle' | 'arming' | 'live' | 'ended' | 'blocked';
+    streamAware: boolean;
+  };
+  gpu: {
+    initialized: boolean;
+    xrState: 'idle' | 'capturing' | 'mapping' | 'projecting' | 'failed';
+    capabilities?: Record<string, unknown>;
+    telemetry?: Record<string, unknown>;
+  };
+};
+How the event flow should work
+Session launch flow
+User selects source
+→ Gaming Policy Engine validates
+→ Gaming Session Manager creates session
+→ RTC bridge connects room + party presence
+→ GPU bridge binds stream/session
+→ GamingHub updates live state
+Join construct flow
+User joins friend construct
+→ RTC federation join
+→ room state sync
+→ party presence sync
+→ side-by-side construct visibility
+→ avatar sync state update
+XR flow
+User starts XR conversion
+→ GPU init check
+→ bind session stream
+→ start capture
+→ mapping
+→ projection state update
+→ GamingHub reflects state
+The file structure I recommend
+New files for the Gaming Center
+src/components/GamingHub.tsx
+src/services/gaming/GamingSessionManager.ts
+src/services/gaming/GamingPolicyEngine.ts
+src/services/gaming/GamingRTCBridge.ts
+src/services/gaming/GamingGPUBridge.ts
+src/services/gaming/GamingPresenceService.ts
+src/services/gaming/GamingFederationService.ts
+src/services/gaming/GamingXRService.ts
+src/services/gaming/types.ts
+What each service does
+GamingSessionManager.ts
+creates / ends sessions
+
+tracks active source
+
+coordinates RTC + GPU
+
+emits construct events
+
+GamingPolicyEngine.ts
+validates links
+
+checks trust / approval
+
+blocks unsafe launches
+
+decides when MCP is needed
+
+GamingRTCBridge.ts
+wraps LeeWay Edge RTC
+
+joins/leaves rooms
+
+gets party presence
+
+gets linked room state
+
+GamingGPUBridge.ts
+wraps LeeWay Edge GPU
+
+initializes GPU
+
+binds stream/session
+
+exposes telemetry / XR state
+
+GamingPresenceService.ts
+tracks party members
+
+online / playing / streaming state
+
+avatar readiness
+
+GamingFederationService.ts
+linked constructs
+
+hive rooms
+
+shared room state
+
+GamingXRService.ts
+XR mode transitions
+
+capture / mapping / projection commands
+
+error handling
+
+Example bridge skeletons
+RTC bridge
+// src/services/gaming/GamingRTCBridge.ts
+export class GamingRTCBridge {
+  private status: 'disconnected' | 'connecting' | 'connected' = 'disconnected';
+
+  async connect() {
+    this.status = 'connecting';
+    // connect to LeeWay Edge RTC SDK or signaling entry
+    this.status = 'connected';
+  }
+
+  async createRoom(roomId: string) {
+    return { roomId, created: true };
+  }
+
+  async joinRoom(roomId: string) {
+    return { roomId, joined: true };
+  }
+
+  async getPresence() {
+    return [];
+  }
+
+  async getRooms() {
+    return [];
+  }
+
+  getStatus() {
+    return this.status;
+  }
+}
+GPU bridge
+// src/services/gaming/GamingGPUBridge.ts
+export class GamingGPUBridge {
+  private state: 'idle' | 'capturing' | 'mapping' | 'projecting' | 'failed' = 'idle';
+  private initialized = false;
+
+  async init() {
+    this.initialized = true;
+    return { initialized: true };
+  }
+
+  async getCapabilities() {
+    return {
+      initialized: this.initialized,
+      xrReady: true,
+      telemetry: true,
+    };
+  }
+
+  async bindStream(sessionId: string) {
+    this.state = 'capturing';
+    return { sessionId, bound: true };
+  }
+
+  async startXRMapping(sessionId: string) {
+    this.state = 'mapping';
+    return { sessionId, state: this.state };
+  }
+
+  async startVRProjection(sessionId: string) {
+    this.state = 'projecting';
+    return { sessionId, mode: 'vr', state: this.state };
+  }
+
+  async startARProjection(sessionId: string) {
+    this.state = 'projecting';
+    return { sessionId, mode: 'ar', state: this.state };
+  }
+
+  getState() {
+    return this.state;
+  }
+}
+What changes in the UI
+Your enhanced GamingHub should now have these live tabs:
+
+launch
+sources
+
+trusted/untrusted state
+
+active session
+
+controller matrix
+
+policy state
+
+party
+party roster
+
+voice presence
+
+playing / streaming state
+
+invite controls
+
+federation
+linked constructs
+
+hive rooms
+
+room join / leave
+
+side-by-side construct state
+
+xr
+GPU ready state
+
+stream-aware status
+
+capture/mapping/projecting
+
+VR/AR mode controls
+
+That keeps the feature unified and not scattered.
+
+What to keep governed
+Because this is still under LEEWAY standards:
+
+Allowed automatically
+connect to approved RTC layer
+
+connect to approved GPU layer
+
+join trusted rooms
+
+sync party state
+
+update telemetry
+
+update XR status
+
+Requires approval
+unknown custom bridges
+
+external executable launch
+
+untrusted browser links
+
+custom MCP projections
+
+high-risk stream capture actions
+
+Never silent
+session failure
+
+RTC disconnect
+
+GPU init failure
+
+XR mapping failure
+
+All of those should emit:
+
+status event
+
+visible UI state
+
+memory receipt
+
+Best next implementation move
+Do this in order:
+
+Create GamingRTCBridge.ts
+
+Create GamingGPUBridge.ts
+
+Create GamingSessionManager.ts
+
+Update GamingHub.tsx to consume those bridges
+
+Add EventBus emissions for:
+
+GAMING_SESSION_STARTED
+
+GAMING_SESSION_ENDED
+
+GAMING_PARTY_UPDATED
+
+GAMING_FEDERATION_UPDATED
+
+GAMING_XR_STATE_CHANGED
+
+Bottom line
+Yes — this is the right connection path.
+
+LeeWay Edge RTC should power the social and federation half
+
+LeeWay Edge GPU should power the stream-aware and XR half
+
+GamingHub should remain the construct-native command and visualization layer
+
+If you want, the next pass should be a real file-by-file implementation plan for:
+
+GamingRTCBridge.ts
+
+GamingGPUBridge.ts
+
+GamingSessionManager.ts
+
+updated GamingHub.tsx
+
+using your existing project structure exactly.
+
+
+
+
+
+
+

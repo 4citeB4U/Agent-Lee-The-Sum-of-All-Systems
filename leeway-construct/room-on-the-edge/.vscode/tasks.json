@@ -1,0 +1,22 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "construct-install-build",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"install",
+				"&&",
+				"npm",
+				"run",
+				"build"
+			]
+		},
+		{
+			"label": "construct-install-build",
+			"type": "shell",
+			"command": "npm install && npm run build"
+		}
+	]
+}

@@ -1,0 +1,91 @@
+{
+  "entities": {
+    "Agent": {
+      "title": "Agent",
+      "description": "An AI helper projection",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "avatar": { "type": "string" },
+        "role": { "type": "string" },
+        "purpose": { "type": "string" },
+        "jobTitle": { "type": "string" },
+        "softSkills": { "type": "array", "items": { "type": "string" } },
+        "hardSkills": { "type": "array", "items": { "type": "string" } },
+        "jobTasks": { "type": "array", "items": { "type": "string" } },
+        "responsibilities": { "type": "array", "items": { "type": "string" } },
+        "assignedDuration": { "type": "string" },
+        "industry": { "type": "string" },
+        "field": { "type": "string" },
+        "status": { "type": "string" },
+        "clockStatus": { "type": "string", "enum": ["CLOCKED_IN", "CLOCKED_OUT", "BREAK"] },
+        "bio": { "type": "string" },
+        "suggestedActions": { "type": "array", "items": { "type": "string" } },
+        "uid": { "type": "string", "description": "The user ID who hired this helper" },
+        "contract": { "$ref": "LaborContract" }
+      },
+      "required": ["id", "name", "jobTitle", "uid", "contract"]
+    },
+    "LaborContract": {
+      "title": "LaborContract",
+      "description": "Employment contract following Projected Employment Doctrine",
+      "type": "object",
+      "properties": {
+        "taskFamily": { "type": "string" },
+        "approvedActions": { "type": "array", "items": { "type": "string" } },
+        "approvedTools": { "type": "array", "items": { "type": "string" } },
+        "approvedDataZones": { "type": "array", "items": { "type": "string" } },
+        "shiftStart": { "type": "string" },
+        "shiftEnd": { "type": "string" },
+        "overtimeAllowed": { "type": "boolean" },
+        "dataPolicy": { "type": "string" },
+        "returnCondition": { "type": "string" }
+      },
+      "required": ["taskFamily", "approvedActions", "approvedTools", "approvedDataZones", "shiftStart", "shiftEnd"]
+    },
+    "Task": {
+      "title": "Task",
+      "description": "A task assigned to an agent",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "agentId": { "type": "string" },
+        "type": { "type": "string" },
+        "status": { "type": "string" },
+        "message": { "type": "string" },
+        "progress": { "type": "number" },
+        "uid": { "type": "string" }
+      },
+      "required": ["id", "agentId", "uid"]
+    },
+    "User": {
+      "title": "User",
+      "description": "Private user profile",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "email": { "type": "string" },
+        "displayName": { "type": "string" },
+        "photoURL": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "role": { "type": "string", "enum": ["admin", "client"] }
+      },
+      "required": ["uid", "email"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "Private user data"
+    },
+    "/agents/{agentId}": {
+      "schema": "Agent",
+      "description": "Hired AI agents"
+    },
+    "/tasks/{taskId}": {
+      "schema": "Task",
+      "description": "Active and completed tasks"
+    }
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "name": "LeeWay Construct",
+  "description": "A high-fidelity, WebXR-enabled 3D execution environment and governance node built with Three.js and custom GLSL shaders.",
+  "requestFramePermissions": [],
+  "majorCapabilities": []
+}

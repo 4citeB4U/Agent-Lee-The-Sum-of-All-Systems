@@ -1,0 +1,6 @@
+{
+  "name": "Agent Lee - Master Production Build",
+  "description": "A high-fidelity 3D quantum CPU visualization using Three.js.",
+  "requestFramePermissions": ["webgl"],
+  "majorCapabilities": []
+}

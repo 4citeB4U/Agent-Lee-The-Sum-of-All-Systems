@@ -1,0 +1,14 @@
+{
+  "manifest_version": 3,
+  "name": "LeeWay Unified Edge",
+  "description": "Browser extension to launch the unified LeeWay GPU/RTC PWA.",
+  "version": "1.0.0",
+  "action": {
+    "default_title": "Launch LeeWay Edge",
+    "default_popup": "popup.html"
+  },
+  "icons": {
+    "128": "../icons/icon.png"
+  },
+  "permissions": ["tabs"]
+}

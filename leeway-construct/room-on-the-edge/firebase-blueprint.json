@@ -1,0 +1,55 @@
+{
+  "entities": {
+    "ConstructTemplate": {
+      "title": "ConstructTemplate",
+      "description": "Spatial configuration generated from an analyzed image",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "imageUrl": { "type": "string" },
+        "skyboxColor": { "type": "string" },
+        "gridColor": { "type": "string" },
+        "nebulaIntensity": { "type": "number" },
+        "panels": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "string" },
+              "title": { "type": "string" },
+              "color": { "type": "string" },
+              "position": { "type": "object" },
+              "rotation": { "type": "object" }
+            }
+          }
+        }
+      },
+      "required": ["id", "imageUrl"]
+    },
+    "ActiveProjection": {
+      "title": "ActiveProjection",
+      "description": "An interactive 3D panel instance in the current construct",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "status": { "type": "string", "enum": ["open", "closed"] },
+        "owner": { "type": "string" },
+        "worldPosition": { "type": "object" },
+        "worldRotation": { "type": "object" }
+      },
+      "required": ["id", "title", "status", "owner"]
+    }
+  },
+  "firestore": {
+    "/constructs/{constructId}": {
+      "schema": "ConstructTemplate",
+      "description": "Stored construct configurations"
+    },
+    "/projections/{projectionId}": {
+      "schema": "ActiveProjection",
+      "description": "Live projection state"
+    }
+  }
+}

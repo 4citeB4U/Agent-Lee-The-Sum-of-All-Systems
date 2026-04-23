@@ -1,0 +1,164 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    //
+    // Collection: users
+    // Document ID: {userId} (matches request.auth.uid)
+    // Fields:
+    //   - uid: string (required) - The user's unique ID
+    //   - email: string (required) - The user's email address
+    //   - displayName: string (optional) - The user's name
+    //   - role: string (required, 'admin' or 'client') - User's platform role
+    //
+    // Collection: agents
+    // Document ID: {agentId}
+    // Fields:
+    //   - id: string (required)
+    //   - uid: string (required) - Owner's UID
+    //   - name: string (required)
+    //   - jobTitle: string (required)
+    //   - purpose: string
+    //   - softSkills: list of strings
+    //   - hardSkills: list of strings
+    //   - jobTasks: list of strings
+    //   - responsibilities: list of strings
+    //   - assignedDuration: string
+    //   - industry: string
+    //   - field: string
+    //   - status: string
+    //   - bio: string
+    //   - suggestedActions: list of strings
+    //
+    // Collection: tasks
+    // Document ID: {taskId}
+    // Fields:
+    //   - id: string (required)
+    //   - agentId: string (required)
+    //   - uid: string (required) - Owner's UID
+    //   - type: string
+    //   - status: string
+    //   - message: string
+    //   - progress: number
+    //
+    // ===============================================================
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+    
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isDocOwner() {
+      return isAuthenticated() && request.auth.uid == resource.data.uid;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() &&
+        (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' ||
+          (request.auth.token.email == "leonard6lee@gmail.com" && request.auth.token.email_verified == true));
+    }
+
+    function hasRequiredFields(fields) {
+      return request.resource.data.keys().hasAll(fields);
+    }
+
+    function hasOnlyAllowedFields(fields) {
+      return request.resource.data.keys().hasOnly(fields);
+    }
+
+    function uidUnchanged() {
+      return !('uid' in request.resource.data) || request.resource.data.uid == request.auth.uid;
+    }
+
+    function uidNotModified() {
+      return !('uid' in request.resource.data) || request.resource.data.uid == resource.data.uid;
+    }
+
+    function isValidEmail(email) {
+      return email is string && email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
+    }
+
+    // ===============================================================
+    // Domain Validators
+    // ===============================================================
+
+    function isValidUser(data) {
+      return data.uid is string && data.uid.size() > 0 &&
+             isValidEmail(data.email) &&
+             (data.displayName == null || (data.displayName is string && data.displayName.size() < 100)) &&
+             (data.photoURL == null || (data.photoURL is string && data.photoURL.size() < 500)) &&
+             (data.createdAt == null || data.createdAt is timestamp) &&
+             data.role in ['admin', 'client'];
+    }
+
+    function isValidContract(data) {
+      return data is map &&
+             data.taskFamily is string && data.taskFamily.size() < 100 &&
+             data.approvedActions is list && data.approvedActions.size() < 20 &&
+             data.approvedTools is list && data.approvedTools.size() < 20 &&
+             data.approvedDataZones is list && data.approvedDataZones.size() < 20 &&
+             data.shiftStart is string && data.shiftEnd is string &&
+             data.overtimeAllowed is bool &&
+             data.dataPolicy is string && data.dataPolicy.size() < 500 &&
+             data.returnCondition is string && data.returnCondition.size() < 500;
+    }
+
+    function isValidAgent(data) {
+      return data.id is string && data.id.size() > 0 &&
+             data.uid is string && data.uid.size() > 0 &&
+             data.name is string && data.name.size() > 0 && data.name.size() < 100 &&
+             data.jobTitle is string && data.jobTitle.size() > 0 && data.jobTitle.size() < 100 &&
+             (data.purpose == null || (data.purpose is string && data.purpose.size() < 1000)) &&
+             (data.softSkills == null || (data.softSkills is list && data.softSkills.size() < 20)) &&
+             (data.hardSkills == null || (data.hardSkills is list && data.hardSkills.size() < 20)) &&
+             (data.jobTasks == null || (data.jobTasks is list && data.jobTasks.size() < 20)) &&
+             (data.responsibilities == null || (data.responsibilities is list && data.responsibilities.size() < 20)) &&
+             (data.bio == null || (data.bio is string && data.bio.size() < 2000)) &&
+             (data.clockStatus == null || data.clockStatus in ['CLOCKED_IN', 'CLOCKED_OUT', 'BREAK']) &&
+             isValidContract(data.contract);
+    }
+
+    function isValidTask(data) {
+      return data.id is string && data.id.size() > 0 &&
+             data.agentId is string && data.agentId.size() > 0 &&
+             data.uid is string && data.uid.size() > 0 &&
+             (data.message == null || (data.message is string && data.message.size() < 500)) &&
+             (data.progress == null || (data.progress is number && data.progress >= 0 && data.progress <= 100));
+    }
+
+    // ===============================================================
+    // Rules
+    // ===============================================================
+
+    match /users/{userId} {
+      allow read: if isOwner(userId) || isAdmin();
+      allow create: if isOwner(userId) && isValidUser(request.resource.data) && (request.resource.data.role == 'client' || isAdmin());
+      allow update: if isOwner(userId) && isValidUser(request.resource.data) && (request.resource.data.role == resource.data.role || isAdmin());
+      allow delete: if isAdmin();
+    }
+
+    match /agents/{agentId} {
+      allow read: if isDocOwner() || isAdmin();
+      allow create: if isAuthenticated() && isValidAgent(request.resource.data) && uidUnchanged();
+      allow update: if (isDocOwner() || isAdmin()) && isValidAgent(request.resource.data) && uidNotModified();
+      allow delete: if isDocOwner() || isAdmin();
+    }
+
+    match /tasks/{taskId} {
+      allow read: if isDocOwner() || isAdmin();
+      allow create: if isAuthenticated() && isValidTask(request.resource.data) && uidUnchanged();
+      allow update: if (isDocOwner() || isAdmin()) && isValidTask(request.resource.data) && uidNotModified();
+      allow delete: if isDocOwner() || isAdmin();
+    }
+  }
+}
