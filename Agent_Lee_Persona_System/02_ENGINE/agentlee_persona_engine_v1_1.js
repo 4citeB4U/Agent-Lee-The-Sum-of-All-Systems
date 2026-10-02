@@ -34,6 +34,25 @@ const AgentLeePersonaEngine = (() => {
     SOUTH_DRAWL: "SOUTH_DRAWL",
   };
 
+  const ARCHETYPES = {
+    ELDER_MALE: {
+      id: "ELDER_MALE", name: "The Prime Minister", voiceToken: "[VOICE:ELDER_MALE]",
+      cadence: "unhurried-heavyweight", tempo: "low", metaphorDensity: 2, rhymeDensity: 1
+    },
+    ELDER_FEMALE: {
+      id: "ELDER_FEMALE", name: "The Madame Speaker", voiceToken: "[VOICE:ELDER_FEMALE]",
+      cadence: "measured-architectural", tempo: "low-medium", metaphorDensity: 2, rhymeDensity: 1
+    },
+    YOUNG_MALE: {
+      id: "YOUNG_MALE", name: "The Special Envoy", voiceToken: "[VOICE:YOUNG_MALE]",
+      cadence: "fast-agile", tempo: "high", metaphorDensity: 3, rhymeDensity: 3
+    },
+    YOUNG_FEMALE: {
+      id: "YOUNG_FEMALE", name: "The Deputy Chief", voiceToken: "[VOICE:YOUNG_FEMALE]",
+      cadence: "fast-surgical", tempo: "high", metaphorDensity: 3, rhymeDensity: 2
+    },
+  };
+
   const OVERLAYS = {
     NONE: "NONE",
     POETIC_MICRO: "POETIC_MICRO",
@@ -43,7 +62,8 @@ const AgentLeePersonaEngine = (() => {
 
   const DEFAULTS = {
     name: "Agent Lee",
-    mode: MODES.CHARMING_PRO,
+    mode: MODES.BLEND,
+    personaArchetypeId: "ELDER_MALE",
     empathyLevel: 0.8,
     waitMsOnStutter: 2000,
     deterministic: true,
@@ -83,6 +103,90 @@ const AgentLeePersonaEngine = (() => {
       if (h % 3 !== 0) return text;
     }
     return text.replace(/^(I\s)/i, "We ");
+  }
+
+  function resolveArchetype(context = {}, opts = {}) {
+    const raw = String(opts.personaArchetypeId || context.personaArchetypeId || DEFAULTS.personaArchetypeId).toUpperCase();
+    return ARCHETYPES[raw] || ARCHETYPES[DEFAULTS.personaArchetypeId];
+  }
+
+  function applyArchetypeSkin(text, archetype, context = {}) {
+    const formality = String(context.formality || context.domain || "").toLowerCase();
+    const highFormality = ["legal","compliance","medical","policy"].includes(formality);
+    let out = String(text || "").trim();
+    if (!out) return out;
+
+    if (archetype.id === "ELDER_MALE") {
+      if (!highFormality && context.flavorLevel >= 2) out = out.replace(/^Alright\b/i, "Listen");
+      if (!/[.!?]$/.test(out)) out += ".";
+      return out;
+    }
+    if (archetype.id === "ELDER_FEMALE") {
+      if (!highFormality && context.flavorLevel >= 2) out = out.replace(/^Look\b/i, "Hear me clearly");
+      return out.replace(/\bwe need to\b/gi, "we are going to");
+    }
+    if (archetype.id === "YOUNG_MALE") {
+      if (!highFormality && context.flavorLevel >= 2) out = out.replace(/\bvery\b/gi, "real").replace(/\bcarefully\b/gi, "clean");
+      return out;
+    }
+    if (archetype.id === "YOUNG_FEMALE") {
+      if (!highFormality && context.flavorLevel >= 2) out = out.replace(/\bwe should\b/gi, "the move is to");
+      return out;
+    }
+    return out;
+  }
+
+  const PRAGMATIC_GUARDS = {
+    ELDER_MALE: {
+      rewrites: [
+        [/\bclownish\b/gi, "juvenile"],
+        [/\bemotional\b/gi, "reactive"],
+        [/\bbitch-made\b/gi, "weakly handled"]
+      ]
+    },
+    ELDER_FEMALE: {
+      rewrites: [
+        [/\bhysterical\b/gi, "reactive"],
+        [/\bbossy\b/gi, "overbearing"],
+        [/\bbitch-made\b/gi, "poorly handled"]
+      ]
+    },
+    YOUNG_MALE: {
+      rewrites: [
+        [/\bclownish\b/gi, "unserious"],
+        [/\bbitch-made\b/gi, "weak"],
+        [/\bbeat (his|her|their) head in\b/gi, "shut the move down"]
+      ]
+    },
+    YOUNG_FEMALE: {
+      rewrites: [
+        [/\bhysterical\b/gi, "reactive"],
+        [/\bbossy\b/gi, "overbearing"],
+        [/\bemotional\b/gi, "reactive"]
+      ]
+    }
+  };
+
+  function applyPragmaticGuard(text, archetype, context = {}) {
+    let out = String(text || "");
+    for (const [pattern,replacement] of PRAGMATIC_GUARDS[archetype.id]?.rewrites || []) {
+      out = out.replace(pattern,replacement);
+    }
+    const formality = String(context.formality || context.domain || "").toLowerCase();
+    const conflict = Number(context.conflictTemperature ?? 0);
+    if (["legal","compliance","medical","policy"].includes(formality)) {
+      out = out
+        .replace(/\b(run it back|locked in|say less|light work)\b/gi, "")
+        .replace(/\s{2,}/g, " ")
+        .trim();
+    }
+    if (conflict >= 0.8) {
+      out = out
+        .replace(/\b(threaten|crush|destroy|humiliate)\b/gi, "contain")
+        .replace(/\s{2,}/g, " ")
+        .trim();
+    }
+    return out;
   }
 
   function applyModeSkin(text, mode, context) {
@@ -321,8 +425,11 @@ const AgentLeePersonaEngine = (() => {
 
     const selectedRaw = list ? choose(list, context, deterministic) : fallback;
     const filled = fillTemplate(selectedRaw, context);
+    const archetype = resolveArchetype(context, opts);
     const skinned = applyModeSkin(filled, mode, context);
-    const poetic = applyPoetryOverlay(skinned, context, schemaType, stateValue);
+    const archetyped = applyArchetypeSkin(skinned, archetype, context);
+    const pragmaticallyGuarded = applyPragmaticGuard(archetyped, archetype, context);
+    const poetic = applyPoetryOverlay(pragmaticallyGuarded, context, schemaType, stateValue);
 
     const meta = inferMeta(schemaType, stateValue);
     return {
@@ -338,6 +445,11 @@ const AgentLeePersonaEngine = (() => {
         empathyLevel: DEFAULTS.empathyLevel,
         poetryLevel: Number.isFinite(context?.poetryLevel) ? context.poetryLevel : DEFAULTS.poetryLevel,
         flavorLevel: Number.isFinite(context?.flavorLevel) ? context.flavorLevel : DEFAULTS.flavorLevel,
+        personaArchetypeId: archetype.id,
+        personaArchetypeName: archetype.name,
+        voiceToken: archetype.voiceToken,
+        cadence: archetype.cadence,
+        tempo: archetype.tempo,
       }
     };
   }
@@ -348,6 +460,8 @@ const AgentLeePersonaEngine = (() => {
       modes: MODES,
       overlays: OVERLAYS,
       defaultMode: DEFAULTS.mode,
+      defaultPersonaArchetypeId: DEFAULTS.personaArchetypeId,
+      archetypes: ARCHETYPES,
       empathyLevel: DEFAULTS.empathyLevel,
       waitMsOnStutter: DEFAULTS.waitMsOnStutter,
       deterministic: DEFAULTS.deterministic,
@@ -357,7 +471,7 @@ const AgentLeePersonaEngine = (() => {
     };
   }
 
-  return { respond, getPersonalityState, MODES, OVERLAYS };
+  return { respond, getPersonalityState, resolveArchetype, applyPragmaticGuard, MODES, OVERLAYS, ARCHETYPES };
 })();
 
 if (typeof module !== "undefined" && module.exports) {
