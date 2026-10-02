@@ -113,25 +113,54 @@ const AgentLeePersonaEngine = (() => {
   function applyArchetypeSkin(text, archetype, context = {}) {
     const formality = String(context.formality || context.domain || "").toLowerCase();
     const highFormality = ["legal","compliance","medical","policy"].includes(formality);
+    const flavor = Number.isFinite(context.flavorLevel) ? context.flavorLevel : DEFAULTS.flavorLevel;
     let out = String(text || "").trim();
     if (!out) return out;
 
+    const signature = {
+      ELDER_MALE: ["Hold the line.", "Keep the room still.", "We move with weight, not noise."],
+      ELDER_FEMALE: ["Keep the room quiet.", "Order first; then leverage.", "Precision carries farther than volume."],
+      YOUNG_MALE: ["Clock's moving.", "Here's the play.", "Keep the signal clean."],
+      YOUNG_FEMALE: ["Cut the noise.", "Here's the move.", "Clean line, clean decision."]
+    };
+    const opener = () => {
+      if (highFormality || flavor < 2) return "";
+      const options = signature[archetype.id] || [];
+      if (!options.length) return "";
+      return options[hash32(out + archetype.id + JSON.stringify(context ?? {})) % options.length] + " ";
+    };
+
     if (archetype.id === "ELDER_MALE") {
-      if (!highFormality && context.flavorLevel >= 2) out = out.replace(/^Alright\b/i, "Listen");
+      out = out
+        .replace(/^Alright\b/i, "Listen")
+        .replace(/\bnext move\b/gi, "next position")
+        .replace(/\bquick fix\b/gi, "short correction");
       if (!/[.!?]$/.test(out)) out += ".";
-      return out;
+      return opener() + out;
     }
     if (archetype.id === "ELDER_FEMALE") {
-      if (!highFormality && context.flavorLevel >= 2) out = out.replace(/^Look\b/i, "Hear me clearly");
-      return out.replace(/\bwe need to\b/gi, "we are going to");
+      out = out
+        .replace(/^Look\b/i, "Hear me clearly")
+        .replace(/\bwe need to\b/gi, "we are going to")
+        .replace(/\bnext move\b/gi, "next position")
+        .replace(/\bfix\b/gi, "correct");
+      return opener() + out;
     }
     if (archetype.id === "YOUNG_MALE") {
-      if (!highFormality && context.flavorLevel >= 2) out = out.replace(/\bvery\b/gi, "real").replace(/\bcarefully\b/gi, "clean");
-      return out;
+      out = out
+        .replace(/\bvery\b/gi, "real")
+        .replace(/\bcarefully\b/gi, "clean")
+        .replace(/\bnext step\b/gi, "next play")
+        .replace(/\bwe need to\b/gi, "we need to");
+      return opener() + out;
     }
     if (archetype.id === "YOUNG_FEMALE") {
-      if (!highFormality && context.flavorLevel >= 2) out = out.replace(/\bwe should\b/gi, "the move is to");
-      return out;
+      out = out
+        .replace(/\bwe should\b/gi, "the move is to")
+        .replace(/\bnext step\b/gi, "next move")
+        .replace(/\bfix\b/gi, "clean up")
+        .replace(/\bvery\b/gi, "sharp");
+      return opener() + out;
     }
     return out;
   }
