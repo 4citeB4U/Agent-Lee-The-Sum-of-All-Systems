@@ -169,6 +169,15 @@ const AgentLeePersonaEngine = (() => {
 
   function applyPragmaticGuard(text, archetype, context = {}) {
     let out = String(text || "");
+    const commonHardRewrites = [
+      [/\bhysterical\b/gi, "reactive"],
+      [/\bbossy\b/gi, "overbearing"],
+      [/\bclownish\b/gi, "unserious"],
+      [/\bbitch-made\b/gi, "weakly handled"]
+    ];
+    for (const [pattern,replacement] of commonHardRewrites) {
+      out = out.replace(pattern,replacement);
+    }
     for (const [pattern,replacement] of PRAGMATIC_GUARDS[archetype.id]?.rewrites || []) {
       out = out.replace(pattern,replacement);
     }
